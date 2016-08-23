@@ -1,0 +1,6 @@
+[submodule "animeface"]
+	path = animeface
+	url = https://github.com/nagadomi/lbpcascade_animeface.git
+[submodule "manga-frame-extraction"]
+	path = manga-frame-extraction
+	url = https://github.com/DwangoMediaVillage/manga_frame_extraction.git
