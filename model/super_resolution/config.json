@@ -1,0 +1,50 @@
+{
+  "base_version": 1,
+  "dataset": {
+    "images_glob": "dummy",
+    "num_test": 600,
+    "scale_first_input": 0.5,
+    "seed_evaluation": 0,
+    "target_width": 448
+  },
+  "loss": {
+    "blend": {
+      "main": {
+        "mae": 1
+      }
+    },
+    "name": null
+  },
+  "model": {
+    "first_generator_name": "comicolorization",
+    "name": null,
+    "other": {
+      "iteration": 550000,
+      "path_result_directory": "./model/comicolorization"
+    },
+    "scale": 2
+  },
+  "project": {
+    "comment": "",
+    "name": "",
+    "result_path": "",
+    "tags": []
+  },
+  "train": {
+    "batchsize": 8,
+    "gpu": -1,
+    "initial_weight": {
+      "default": null
+    },
+    "log_iteration": 100,
+    "optimizer": {
+      "default": {
+        "gradient_clipping": null,
+        "name": "adam",
+        "weight_decay": null
+      },
+      "main": "default"
+    },
+    "save_iteration": 10000
+  }
+}

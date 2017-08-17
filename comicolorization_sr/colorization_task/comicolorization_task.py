@@ -13,8 +13,8 @@ from comicolorization_sr import dataset
 
 
 class ComicolorizationTask(BaseColorizationTask):
-    def __init__(self, config: Config):
-        super().__init__(config)
+    def __init__(self, config: Config, load_model=True):
+        super().__init__(config, load_model)
 
         path_result_directory = config.model_config.other['path_result_directory']
         args_default = comicolorization.utility.config.get_default_train_args()
@@ -28,9 +28,9 @@ class ComicolorizationTask(BaseColorizationTask):
         for k, v in args_default.items():
             args_train.setdefault(k, v)
 
-        self._laod_model()
+        self._load_model()
 
-    def _laod_model(self):
+    def _load_model(self):
         # make model
         model, reinput = comicolorization.utility.model.make_ltbc(self._args_train)
         assert reinput is None or len(reinput) == 0

@@ -19,9 +19,6 @@ class Config(object):
         self.train_config = TrainConfig(self.config.get('train'))
         self.project_config = ProjectConfig(self.config.get('project'))
 
-        project_path = self.project_config.get_project_path()
-        os.path.exists(project_path) or os.mkdir(project_path)
-
     def copy_config_json(self):
         project_path = self.project_config.get_project_path()
         config_path = self.get_config_path(project_path)

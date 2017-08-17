@@ -9,7 +9,7 @@ from comicolorization_sr import utility
 
 
 class Drawer(object):
-    def __init__(self, path_result_directory, gpu, colorization_class):
+    def __init__(self, path_result_directory, gpu, colorization_class, load_colorization_task_model=False):
         config_path = Config.get_config_path(path_result_directory)
         config = Config(config_path)
 
@@ -22,7 +22,8 @@ class Drawer(object):
         self.gpu = gpu
 
         # colorization
-        self.colorization = colorization_class(config)  # type: BaseColorizationTask
+        self.colorization = colorization_class(config,
+                                               load_model=load_colorization_task_model)  # type: BaseColorizationTask
 
     def _get_path_model(self, iteration):
         return os.path.join(self.path_result_directory, '{}.model'.format(iteration))

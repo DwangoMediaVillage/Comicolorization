@@ -6,8 +6,9 @@ from comicolorization_sr.data_process import BaseDataProcess
 
 
 class BaseColorizationTask(metaclass=ABCMeta):
-    def __init__(self, config: Config):
+    def __init__(self, config: Config, load_model=True):
         self.config = config
+        self.load_model = load_model
 
     @abstractmethod
     def get_input_process(self) -> BaseDataProcess:

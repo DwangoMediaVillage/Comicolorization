@@ -1,5 +1,6 @@
 import argparse
 import chainer
+import os
 
 from comicolorization_sr.colorization_task import ComicolorizationTask
 from comicolorization_sr.config import Config
@@ -17,6 +18,10 @@ config_json_path = parser.parse_args().config_json_path
 
 # load config
 config = Config(config_json_path)
+project_path = config.project_config.get_project_path()
+if not os.path.exists(project_path):
+    os.mkdir(project_path)
+
 config.copy_config_json()
 train_config = config.train_config
 

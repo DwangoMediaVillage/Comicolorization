@@ -8,3 +8,4 @@ from . import loss
 from . import model
 from . import trainer
 from . import updater
+from . import drawer
