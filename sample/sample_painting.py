@@ -1,4 +1,5 @@
 import argparse
+import json
 import os
 from PIL import Image
 import sys
@@ -9,13 +10,16 @@ import comicolorization
 import comicolorization_sr
 
 parser = argparse.ArgumentParser()
+parser.add_argument('--input_image', default='./sample/HinagikuKenzan_026.jpg', help='path of input page image')
 parser.add_argument('--reference_images', nargs='+', default=[
     './sample/TasogareTsushin-1.png',
     './sample/Belmondo-1.png',
     './sample/HinagikuKenzan-1.png',
     './sample/Belmondo-1.png',
     './sample/TasogareTsushin-1.png',
-], help='reference images')
+], help='paths of reference images')
+parser.add_argument('--panel_rectangle', default='./sample/panel_rectangle.json',
+                    help='path of json file written panel rectangle')
 parser.add_argument('--comicolorizatoin_model_directory', default='./model/comicolorization/',
                     help='the trained model directory for the comicolorization task.')
 parser.add_argument('--comicolorizatoin_model_iteration', type=int, default=550000,
@@ -45,14 +49,8 @@ drawer_sr = comicolorization_sr.drawer.Drawer(
 drawer_sr.load_model(iteration=args.super_resolution_model_iteration)
 
 # prepare datas
-image = Image.open('./sample/HinagikuKenzan_026.jpg').convert('RGB')
-rects = [
-    [537, 61, 226, 412],
-    [57, 61, 472, 412],
-    [0, 501, 823, 326],
-    [304, 850, 458, 275],
-    [41, 850, 234, 275],
-]
+image = Image.open(args.input_image).convert('RGB')
+rects = json.load(open(args.panel_rectangle))
 reference_images = [Image.open(path).convert('RGB') for path in args.reference_images]
 assert len(rects) == len(reference_images)
 

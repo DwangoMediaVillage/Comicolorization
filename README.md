@@ -1,18 +1,51 @@
 # Comicolorization
 
-## Use Trained Model
+## Run Sample Code
+
+### Colorization
 ```bash
-python sample/sample.py
+python sample/sample_painting.py
+
+# Help
+# python sample/sample_painting.py --help
 ```
 
 * optional arguments
-* `--reference_images`: reference images
+* `--input_image`: path of input page image
+* `--panel_rectangle`: path of json file written panel rectangle
+* `--reference_images`: paths of reference images
 * `--comicolorizatoin_model_directory`: the trained model directory for the comicolorization task.
 * `--comicolorizatoin_model_iteration`: the trained model iteration for the comicolorization task.
 * `--super_resolution_model_directory`: the trained model directory for the super resolution task.
 * `--super_resolution_model_iteration`: the trained model iteration for the super resolution task.
 * `--gpu`: gpu number (-1 means the cpu mode).
 * `--output`: the path of colorized image.
+
+### Auto Panel Rectangle Detection
+#### 1. get `manga-frame-extension` and build
+```bash
+git submodule init
+git submodule update
+cd manga-frame-extraction/MangaFrameExtraction
+cmake ./
+make
+```
+
+Please read [manga-frame-extraction's README.md](http://github.com/DwangoMediaVillage/manga_frame_extraction/blob/master/README.md) for details.
+
+### 2. run
+```bash
+cd ../../
+python sample/sample_detecting_panels.py
+
+# Help
+# python sample/sample_detecting_panels.py --help
+```
+
+* optional arguments
+* `--input`: the path of input page image.
+* `--mfe`: the path of manga-frame-extraction's binary file.
+* `--output`: the path of output panel rectangle information.
 
 ## Training
 
