@@ -8,6 +8,7 @@ ROOT_PATH = os.path.join(os.path.dirname(__file__), "..")
 sys.path.append(ROOT_PATH)
 import comicolorization
 import comicolorization_sr
+import pipeline
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--input_image', default='./sample/HinagikuKenzan_026.jpg', help='path of input page image')
@@ -18,7 +19,7 @@ parser.add_argument('--reference_images', nargs='+', default=[
     './sample/Belmondo-1.png',
     './sample/TasogareTsushin-1.png',
 ], help='paths of reference images')
-parser.add_argument('--panel_rectangle', default='./sample/panel_rectangle.json',
+parser.add_argument('--panel_rectangle', default='./sample/example_panel_rectangle.json',
                     help='path of json file written panel rectangle')
 parser.add_argument('--comicolorizatoin_model_directory', default='./model/comicolorization/',
                     help='the trained model directory for the comicolorization task.')
@@ -55,7 +56,7 @@ reference_images = [Image.open(path).convert('RGB') for path in args.reference_i
 assert len(rects) == len(reference_images)
 
 # prepare pipeline
-pipeline = comicolorization.pipeline.PagePipeline(
+pipeline = pipeline.PagePipeline(
     drawer=drawer,
     drawer_sr=drawer_sr,
     image=image,

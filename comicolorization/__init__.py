@@ -5,4 +5,3 @@ from . import utility
 from . import loss
 from . import updater
 from . import drawer
-from . import pipeline

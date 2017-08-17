@@ -32,7 +32,8 @@ def get_train_parser():
     parser.add_argument('--alpha_ltbc_classification', type=float, default=None,
                         help='alpha value of LTBC paper. if unspecified, without classification')
     parser.add_argument('--ltbc_classification_num_output_list', type=int, nargs='+', default=[256, 205],
-                        help='number of nodes each layer of classification network')
+                        help='number of nodes each layer of classification network.'
+                             'last number should be same as number of labels')
     parser.add_argument('--use_histogram_network', action='store_true')
     parser.add_argument('--num_bins_histogram', type=int, default=85,
                         help='number of bins of color histogram')
@@ -58,6 +59,7 @@ def get_train_parser():
     parser.add_argument('--discriminator_first_pooling_size', type=int, default=1,
                         help='size of pooling for discriminator\'s input image')
     parser.add_argument('--log_interval', type=int, default=10, help='number of logging interval iterations')
+    parser.add_argument('--verbose', action='store_true', help='show loss')
     return parser
 
 

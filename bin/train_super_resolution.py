@@ -1,7 +1,10 @@
 import argparse
 import chainer
+import sys
 import os
 
+ROOT_PATH = os.path.join(os.path.dirname(__file__), "..")
+sys.path.append(ROOT_PATH)
 from comicolorization_sr.colorization_task import ComicolorizationTask
 from comicolorization_sr.config import Config
 from comicolorization_sr import dataset

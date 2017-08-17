@@ -211,7 +211,8 @@ if args.separate_model_reinput:
 trainer.extend(extensions.Evaluator(test_iterator, target=targets, eval_func=loss_maker.loss_test, device=args.gpu), trigger=log_interval)
 trainer.extend(extensions.Evaluator(train_for_evaluate_iterator, target=targets, eval_func=loss_maker.loss_test, device=args.gpu), name='validation/train', trigger=log_interval)
 trainer.extend(extensions.LogReport(trigger=log_interval, log_name="log.txt"))
-trainer.extend(extensions.PrintReport(report_target))
+if args.verbose:
+    trainer.extend(extensions.PrintReport(report_target))
 trainer.extend(extensions.ProgressBar(update_interval=10))
 
 trainer.run()

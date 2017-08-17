@@ -1,9 +1,15 @@
 {
+    "alpha_ltbc_classification": 0.00333333333,
     "disable_ltbc_global": false,
     "line_drawing_mode": "otsu_threshold",
     "log_interval": 200,
     "loss_blend_ratio_reinput": [],
     "loss_type": "Lab",
+    "ltbc_classification_loss_function": "multi_label",
+    "ltbc_classification_num_output_list": [
+        512,
+        428
+    ],
     "max_epoch": 1000,
     "max_pixel_drawing": 15,
     "max_size_pixel_drawing": 1,

@@ -5,7 +5,7 @@ import sys
 
 ROOT_PATH = os.path.join(os.path.dirname(__file__), "..")
 sys.path.append(ROOT_PATH)
-import comicolorization
+import pipeline
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--input', default='./sample/HinagikuKenzan_026.jpg',
@@ -16,5 +16,5 @@ parser.add_argument('--output', default='panel_rectangle.json',
                     help='the path of output panel rectangle information.')
 args = parser.parse_args()
 
-panel_rectangle = comicolorization.pipeline.detect_panel_rectangle(args.input, args.mfe)
+panel_rectangle = pipeline.detect_panel_rectangle(args.input, args.mfe)
 json.dump(panel_rectangle, open(args.output, 'w'))

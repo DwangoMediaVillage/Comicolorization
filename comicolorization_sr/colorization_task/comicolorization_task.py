@@ -28,7 +28,8 @@ class ComicolorizationTask(BaseColorizationTask):
         for k, v in args_default.items():
             args_train.setdefault(k, v)
 
-        self._load_model()
+        if load_model:
+            self._load_model()
 
     def _load_model(self):
         # make model

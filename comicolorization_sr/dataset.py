@@ -41,7 +41,8 @@ class RandomCropImageDataset(BaseImageDataset):
     def get_example(self, i):
         image = self._base_dataset[i]
         width, height = image.size
-        assert width >= self._crop_width and height >= self._crop_height
+        assert width >= self._crop_width and height >= self._crop_height,\
+            'dataset image size should be over crop size.'
 
         if not self._test:
             top = numpy.random.randint(height - self._crop_height + 1)
