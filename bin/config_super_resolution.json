@@ -1,0 +1,47 @@
+{
+  "base_version": 1,
+  "dataset": {
+    "seed_evaluation": 0,
+    "num_test": 600,
+    "images_glob": "/path/to/image/*.png",
+    "scale_input": 0.5,
+    "target_width": 448
+  },
+  "model": {
+    "name": null,
+    "scale": 2,
+    "colorizer_name": "comicolorization",
+    "other": {
+      "iteration": 550000,
+      "path_result_directory": "/path/to/model"
+    }
+  },
+  "loss": {
+    "name": null,
+    "blend": {
+      "main": {
+        "mae": 1
+      }
+    }
+  },
+  "train": {
+    "batchsize": 8,
+    "gpu": -1,
+    "log_iteration": 100,
+    "save_iteration": 10000,
+    "optimizer": {
+      "default": {
+        "name": "adam",
+        "weight_decay": null,
+        "gradient_clipping": null
+      },
+      "main": "default"
+    }
+  },
+  "project": {
+    "name": "test_{date}_{hash}",
+    "result_path": "/path/to/result",
+    "tags": [],
+    "comment": ""
+  }
+}
