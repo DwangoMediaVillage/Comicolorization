@@ -100,9 +100,9 @@ class PairImageDataset(chainer.dataset.DatasetMixin):
 
     def get_example(self, i):
         image = self._base_dataset[i]
-        input_image = self._input_process(image, self._test)  # 小さい入力画像
-        concat_image = self._concat_process(image, self._test)  # 大きいconcat用の入力画像
-        target_image = self._target_process(image, self._test)  # 目標画像
+        input_image = self._input_process(image, self._test)  # small input image for comicolorization task
+        concat_image = self._concat_process(image, self._test)  # big input image for super resolution task
+        target_image = self._target_process(image, self._test)  # target image for super resolution task
         return {
             'input': input_image,
             'concat': concat_image,
@@ -116,8 +116,8 @@ def create(
         concat_process: BaseDataProcess,
 ):
     """
-    :param input_process: targetのPILImageを、入力arrayに変換する処理
-    :param concat_process: targetのPILImageを、超解像入力arrayに結合させるarrayに変換する処理
+    :param input_process: make small input image for comicolorization task
+    :param concat_process: make big input image for super resolution task
     """
     paths = glob.glob(config.images_glob)
 
@@ -143,7 +143,6 @@ def create(
         d = RandomCropImageDataset(d, crop_width=w, crop_height=w, test=test)
         d = RandomFlipImageDataset(d, test=test)
 
-        # 小さい入力画像、大きいconcat用の入力画像、目標画像それぞれのデータ処理
         d = PairImageDataset(
             base_dataset=d,
             test=test,

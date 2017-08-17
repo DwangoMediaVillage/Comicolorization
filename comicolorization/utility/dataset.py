@@ -38,7 +38,7 @@ def choose_dataset(
         dataset = comicolorization.dataset.PILImageDataset(dataset)
         dataset = comicolorization.dataset.ColorMonoImageDataset(dataset)
 
-        # 入力画像の色空間
+        # color space of input image
         if loss_type == 'RGB':
             pass
         elif loss_type == 'Lab' or loss_type == 'ab' or use_binarization_dataset:
@@ -51,7 +51,7 @@ def choose_dataset(
         else:
             raise ValueError(loss_type)
 
-        # 入力画像の線画化
+        # make line-drawing
         if line_drawing_mode is not None:
             if line_drawing_mode == 'otsu_threshold':
                 dataset = comicolorization.dataset.LabOtsuThresholdImageDataset(dataset)
@@ -66,7 +66,7 @@ def choose_dataset(
             else:
                 raise ValueError(line_drawing_mode)
 
-        # 部分塗り
+        # colorize part
         if max_pixel_drawing is not None:
             dataset = comicolorization.dataset.LabSeveralPixelDrawingImageDataset(
                 base=dataset,

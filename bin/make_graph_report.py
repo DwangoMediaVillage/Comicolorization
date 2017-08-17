@@ -1,15 +1,11 @@
 """
 python3 bin/make_graph_report.py \
-    201610222112_linelike_without_real_classification \
-    201610222113_linelike_without_real_global \
-    201610222113_linelike_without_real_noglobal \
+    projectA \
+    projectB \
     --path_output `pwd`/graph_linelike_without_real.png \
-    --path_root `pwd`/results \
     --key_x iteration \
     --key_y validation/main/loss validation/train/main/loss \
-    --title データセット：アニメ顔画像の線画ライク＿出力：LAB\
-    --project_name classificationあり globalあり globalなし \
-    --font_path /Library/Fonts/Microsoft/Meiryo.ttf \
+    --title loss-graph\
     --figsize 16 9 \
     --xlim 0 100000 \
     --ylim 0 500 \

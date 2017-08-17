@@ -22,8 +22,11 @@ model = None  # type: chainer.Chain
 discriminator = None
 if args.network_model == 'SimpleConvolution':
     model = comicolorization.models.SimpleConvolution(loss_type=args.loss_type)
+    model_reinput_list = []
 elif args.network_model == 'LTBC':
     model, model_reinput_list = comicolorization.utility.model.make_ltbc(vars(args))
+else:
+    raise ValueError(args.network_model)
 
 if args.use_adversarial_network:
     discriminator = comicolorization.models.Discriminator(

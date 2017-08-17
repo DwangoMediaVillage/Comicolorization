@@ -28,13 +28,13 @@ class Ltbc(BaseModel):
     ):
         """
         :param use_global: Trueならglobal feature networkを使用する
-        :param use_classification: Trueならclassification networkを使用する
-        :param use_histogram: Trueならhistogram networkを使用する
-        :param use_multidimensional_histogram: Trueなら多次元ヒストグラムを使用する
-        :param threshold_histogram_palette: Noneならパレットモードにしない。このヒストグラムの値がこの値以下なら0、この値より上なら1になる
+        :param use_classification: if True, use classification network
+        :param use_histogram: if True, use histogram network
+        :param use_multidimensional_histogram: if it is True, multidimensional histogram mode
+        :param threshold_histogram_palette: the threshold of palette mode. if None, then histogram mode.
         :param reinput_mode:
-            None: 再代入を考えない
-            color: 3チャンネルの色付き画像も入力可能になる
+            None: no reinput
+            color: can input 3 channel image
         """
         if use_multidimensional_histogram:
             assert use_histogram, "when using multidimensional histogram, should set `use_histogram=True`"
@@ -74,13 +74,10 @@ class Ltbc(BaseModel):
 
     def __call__(self, x, x_global=None, x_rgb=None, x_histogram=None, test: bool = False):
         """
-        `x_global`を指定しない場合は`x_global=x`となる。
-        `use_histogram`がFalseの場合、`x_rgb`や`x_histogram`は無視される。
-
-        :param x: グレー画像
-        :param x_global: global用のグレー画像
-        :param x_rgb: histogram用のRGB(0~255)カラー画像
-        :param x_histogram: x_rgbを介さないで直接入力ためのhistogram
+        :param x: input image
+        :param x_global: global input image. if None, then x_global=x
+        :param x_rgb: reference image for color feature
+        :param x_histogram: color histogram. if it is None, then calc color histogram by reference image
         """
         if self.use_histogram:
             assert x_rgb is not None or x_histogram is not None, "must give `x_rgb` or `x_histogram`"

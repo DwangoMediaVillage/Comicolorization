@@ -18,8 +18,8 @@ class HistogramNetwork(chainer.Chain):
         if multidimensional: output size will be [batch, num_bins^channel]
         :param ranges: color range for each channel
         :param num_bins: number of bins for each channel
-        :param threshold_palette: Noneならパレットモードにしない。このヒストグラムの値がこの値以下なら0、この値より上なら1になる
-        :param use_multidimensional: Trueなら多次元ヒストグラムを使用する
+        :param threshold_palette: the threshold of palette mode. if None, then histogram mode.
+        :param use_multidimensional: if it is True, multidimensional histogram mode
         """
         super().__init__()
 

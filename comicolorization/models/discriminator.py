@@ -3,14 +3,6 @@ import chainer
 
 
 class Discriminator(chainer.Chain):
-    """
-    GANの判別器
-    最終出力は1データセットにつき1次元。
-    出力1で真、出力0で偽。
-    真偽の定義
-    Generator(今までのnetwork)がデータセット本物と同じなら１
-    """
-
     def __init__(self, size, first_pooling_size=1):
         last_size = size // (2 ** 4) // first_pooling_size
 

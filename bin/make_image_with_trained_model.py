@@ -1,8 +1,4 @@
 """
-プロジェクトのディレクトリにimages_with_trained_modelディレクトリを作成して、
-test_dataset_pathで指定した画像から白黒画像を作成し、学習済みモデルに入力する。
-
-（本物線画画像を使って色塗りする例）
 python3 -i bin/make_image_with_trained_model.py \
     [target projects] \
     --path_root /path/to/result \
@@ -16,8 +12,6 @@ python3 -i bin/make_image_with_trained_model.py \
     --reference_image_path \
         [path to reference image 1].png \
         [path to reference image 2].png \
-
-全部の学習済みモデルで画像を作ると時間がかかるので、適宜target_iterationを指定すると便利。
 """
 
 import glob
@@ -107,10 +101,8 @@ for path_result_directory in paths_result_directory:
         paths = glob.glob("{}/*".format(args.test_dataset_path))
         num_dataset_test = len(paths)
 
-    # 線画化処理が一つしかなかった時の、線画化モードでモデルで回す時
     if 'use_line_drawing_mode' in args_train and args_train['use_line_drawing_mode']:
         line_drawing_mode = 'adaptive_threshold'
-    # 線画化処理が複数になった最新モデルで回す時
     else:
         line_drawing_mode = args_train['line_drawing_mode']
 

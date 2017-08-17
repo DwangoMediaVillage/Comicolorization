@@ -1,5 +1,3 @@
-import numpy
-from PIL import Image
 import PIL.ImageOps
 import PIL.ImageFilter
 import PIL.ImageChops
@@ -7,78 +5,13 @@ import typing
 
 import comicolorization
 import comicolorization_sr
-from . import PanelPipeline
-
-
-def _make_rawline_image(bw_image, filter_size=5):
-    """
-    Dilate+Diffを使って、擬似的に線画を作る。
-    :param bw_image: 元画像
-    :param filter_size: 最大値フィルタのサイズ
-    :return: 線画
-    """
-    bw = bw_image.convert('L')
-    line_raw = bw.filter(PIL.ImageFilter.MaxFilter(filter_size))  # opencvのdilateの代わり
-    line_raw = PIL.ImageChops.difference(bw, line_raw)
-    line_raw = PIL.ImageOps.invert(line_raw)
-    return line_raw
-
-
-def _make_panel_image(base_image, panel_rect):
-    """
-    コマ位置を指定してコマ画像を切り出す。
-    :param base_image: 元画像
-    :param panel_rect: コマ位置。[左上x,左上y,width,height]
-    :return: 切り出されたコマ画像
-    """
-    width = panel_rect[2]
-    height = panel_rect[3]
-    img = base_image.crop((panel_rect[0], panel_rect[1], panel_rect[0] + width, panel_rect[1] + height))
-    return img
-
-
-def _make_page_image(base_image, panel_image_list, offset_list):
-    """
-    ページ画像から切り出したコマ画像を、元の位置に戻して、ページ画像を合成する。
-    :param base_image: 元のページ画像
-    :param panel_image_list: コマ画像のリスト
-    :param offset_list: コマ画像の左上位置のリスト。[[x,y], ...]
-    :return: 合成したページ画像
-    """
-    base = base_image.copy()
-    for panel_image, offset in zip(panel_image_list, offset_list):
-        base.paste(panel_image, tuple(offset))
-    return base
-
-
-def _make_line_image(rawline_image, threshould=150):
-    """
-    二値化された線画を作成する。
-    :param rawline_image: _make_rawline_imageで作成した線画
-    :param threshould: 二値化の閾値
-    :return: 二値化された線画
-    """
-    line = (numpy.array(rawline_image) > threshould).astype(numpy.uint8) * 255
-    line = Image.fromarray(line)
-    return line
-
-
-def _make_overlay_image(page_image, line_image):
-    """
-    post process。
-    :param page_image: ページ画像
-    :param line_image: ページ画像に重ねる線画
-    :return: post process後のページ画像
-    """
-    img = page_image.copy()
-    alpha = PIL.ImageOps.invert(line_image)
-    img.paste(line_image, mask=alpha)
-    return img
+from .panel_pipeline import PanelPipeline
+from .process import make_binarized_image
 
 
 class PagePipeline(object):
     """
-    １ページの、着色以外のパイプライン
+    The pipeline of one page
     """
 
     def __init__(
@@ -92,11 +25,13 @@ class PagePipeline(object):
             panel_rects,
     ):
         """
-        :param image: 任意のサイズのページ画像
-        :param reference_images: 任意のサイズの参照画像。コマの数だけ必要
-        :param threshold_binary: コマ二値化の際の閾値
-        :param threshold_line: 重ねる線画の閾値
-        :param panel_rects: コマ位置の配列。[[左上x,左上y,width,height], ...]
+        :param drawer: drawer of the comicolorization task
+        :param drawer_sr: draw of the super resolution task
+        :param image: source page image
+        :param reference_images: list of reference images
+        :param threshold_binary: threshold by using binarizing input image
+        :param threshold_line: threshold by using binarizing line-drawing
+        :param panel_rects: panel's rectangle [[left,top,width,height], ...]
         """
         self.drawer = drawer
         self.drawer_sr = drawer_sr
@@ -107,11 +42,10 @@ class PagePipeline(object):
         self.threshold_line = threshold_line
 
         self._raw_image = image
-        self._raw_line = _make_rawline_image(image)  # 線画
 
     def process(self):
         """
-        着色処理
+        colorization process
         """
         panels = self._pre_process()
         drawn_panel_images = [panel.process() for panel in panels]
@@ -119,12 +53,11 @@ class PagePipeline(object):
 
     def _pre_process(self) -> typing.List[PanelPipeline]:
         """
-        前処理。
-        ・コマ分割
+        * split panel images
         """
         panels = []
         for reference_image, panel_rect in zip(self.reference_images, self.panel_rects):
-            bw_panel = _make_panel_image(self._raw_image, panel_rect)
+            bw_panel = self._make_panel_image(self._raw_image, panel_rect)
             panel = PanelPipeline(
                 drawer=self.drawer,
                 drawer_sr=self.drawer_sr,
@@ -138,17 +71,66 @@ class PagePipeline(object):
 
     def _post_process(self, drawn_panel_images):
         """
-        後処理。
-        ・コマごとに後処理
-        ・１ページに戻す
-        ・線画を重ねる
+        * resynthesis page image
+        * overlay line-drawing
         """
-        # 漫画のコマを着色済みのものに置き換え
-        bg = _make_page_image(self._raw_image, drawn_panel_images, [[r[0], r[1]] for r in self.panel_rects])
+        raw_line = self._make_rawline_image(self._raw_image)
 
-        # オーバーレイ用の線画を作成
-        line = _make_line_image(self._raw_line, self.threshold_line)
+        bg = self._make_page_image(self._raw_image, drawn_panel_images, [[r[0], r[1]] for r in self.panel_rects])
+        line = make_binarized_image(raw_line, self.threshold_line)
 
-        # 合成
-        output = _make_overlay_image(bg, line)
+        output = self._make_overlayed_image(bg, line)
         return output
+
+    @staticmethod
+    def _make_rawline_image(bw_image, filter_size=5):
+        """
+        Make line-drawing by using Dilate+Diff
+        :param bw_image: source image
+        :param filter_size: size of filter
+        :return: line-drawing
+        """
+        bw = bw_image.convert('L')
+        line_raw = bw.filter(PIL.ImageFilter.MaxFilter(filter_size))
+        line_raw = PIL.ImageChops.difference(bw, line_raw)
+        line_raw = PIL.ImageOps.invert(line_raw)
+        return line_raw
+
+    @staticmethod
+    def _make_panel_image(base_image, panel_rect):
+        """
+        Make panel image with the panel rectangle
+        :param base_image: source image
+        :param panel_rect: panel's rectangle [left,top,width,height]
+        :return: panel image
+        """
+        width = panel_rect[2]
+        height = panel_rect[3]
+        img = base_image.crop((panel_rect[0], panel_rect[1], panel_rect[0] + width, panel_rect[1] + height))
+        return img
+
+    @staticmethod
+    def _make_page_image(base_image, panel_image_list, offset_list):
+        """
+        Resynthesis page image with panel images
+        :param base_image: source page image
+        :param panel_image_list: list of panel images
+        :param offset_list: list of panels' left and top [[left,top], ...]
+        :return: page image
+        """
+        base = base_image.copy()
+        for panel_image, offset in zip(panel_image_list, offset_list):
+            base.paste(panel_image, tuple(offset))
+        return base
+
+    @staticmethod
+    def _make_overlayed_image(page_image, line_image):
+        """
+        :param page_image: source page image
+        :param line_image: line-drawing for overlay
+        :return: image
+        """
+        img = page_image.copy()
+        alpha = PIL.ImageOps.invert(line_image)
+        img.paste(line_image, mask=alpha)
+        return img

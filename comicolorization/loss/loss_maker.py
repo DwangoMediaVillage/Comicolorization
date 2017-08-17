@@ -3,7 +3,6 @@ import typing
 
 import comicolorization
 import numpy
-from chainer.cuda import cupy
 
 
 class LossMaker(object):

@@ -9,7 +9,7 @@ import comicolorization
 
 class Drawer(object):
     """
-    結果保存ディレクトリを指定して初期化することで、設定を取得してモデルを読み込み、色塗り用のメソッドを提供するクラス。
+    For loading the trained model and drawing image.
     """
 
     def __init__(self, path_result_directory, gpu):
@@ -56,7 +56,8 @@ class Drawer(object):
     @property
     def can_input_color_image(self):
         """
-        3チャンネルの入力（部分塗り）に対応しているか
+        Is possible to input 3 channel image.
+        This means the model was trained by color dots or not.
         """
         return self.args_train['max_pixel_drawing'] is not None
 
@@ -68,7 +69,8 @@ class Drawer(object):
             histogram_array=None,
     ):
         """
-        :param input_images_array: 入力画像。チャンネル数が3ならそのままforward、1なら白黒画像とみなしてチャンネル数3にpadding
+        :param input_images_array: 1 channel or 3 channel input image.
+        when input image has only 1 channel, it will be padded and become 3 channel image.
         """
         if self.can_input_color_image and input_images_array.shape[1] == 1:
             input_images_array = comicolorization.utility.image.padding_channel_1to3(input_images_array)

@@ -26,7 +26,7 @@ class MultiUpdater(chainer.training.StandardUpdater):
 
         super().__init__(optimizer=optimizers, *_args, **kwargs)
 
-        # 同じモデルに複数のoptimizerを適用するとreporterが壊れるため特別処置
+        # chainer.reporter cannot work on some optimizer focus same model
         if args.separate_backward_reinput and reinput_optimizer is None:
             reinput_optimizer = [main_optimizer for _ in range(len(args.loss_blend_ratio_reinput))]
 

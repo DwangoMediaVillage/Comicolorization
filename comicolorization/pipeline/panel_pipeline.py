@@ -4,15 +4,16 @@ from skimage.color import rgb2lab
 
 import comicolorization
 import comicolorization_sr
+from .process import make_binarized_image
 
 
-def _get_input_panel_rect(panel_size, input_width):
+def _calc_input_panel_rect(panel_size, input_width):
     """
-    ニューラルネットモデルに入力する画像内の、コマ画像の位置を求める。
-    モデルの入力は正方形のみを想定してるのに対し、コマ画像は長方形を想定しているため、この値が必要になる。
-    :param panel_size: コマ画像のサイズ。[width, height]
-    :param input_width: ニューラルネットモデルが想定している正方形画像の横幅
-    :return: コマ画像の位置。[左上x, 左上y, 右下x, 右下y]
+    Calc rectangle of the panel image for inputting to neural network model.
+    Because panel image isn't square but neural network model postulate square
+    :param panel_size: size of source panel image [width, height]
+    :param input_width: width of input image for neural network model
+    :return: rectangle of panel image [left, top, right, bottom]
     """
     w, h = panel_size
     scale = min(input_width / w, input_width / h)
@@ -24,11 +25,11 @@ def _get_input_panel_rect(panel_size, input_width):
 
 def _make_input_panel_image(panel_image, input_panel_rect, input_width):
     """
-    ニューラルネットモデルに入力する画像を作成する。
-    :param panel_image: コマ画像
-    :param input_panel_rect: _get_input_panel_rectで求めた値
-    :param input_width: ニューラルネットモデルが想定している正方形画像の横幅
-    :return: ニューラルネットモデル用の入力画像
+    Make input image for neural network model
+    :param panel_image: source panel image
+    :param input_panel_rect: rectangle calculated by _calc_input_panel_rect
+    :param input_width: width of input image for neural network model
+    :return: input image for neural network model
     """
     x, y, _w, _h = input_panel_rect
     w, h = _w - x, _h - y
@@ -41,21 +42,9 @@ def _make_input_panel_image(panel_image, input_panel_rect, input_width):
     return bg
 
 
-def _make_binarized_image(img, threshold):
-    """
-    二値化された画像を作成する
-    :param img: 二値化対象の画像
-    :param threshold: 閾値
-    :return: 二値化された画像
-    """
-    img = ((numpy.array(img) > threshold) * 255).astype(numpy.uint8)
-    img = Image.fromarray(img)
-    return img
-
-
 class PanelPipeline(object):
     """
-    １コマ着色パイプライン
+    The pipeline of one panel
     """
 
     def __init__(
@@ -68,10 +57,12 @@ class PanelPipeline(object):
             threshold=200,
     ):
         """
-        :param image: 任意のサイズのコマ画像
-        :param reference_image: 任意のサイズの参照画像
-        :param resize_width: リサイズ後の正方形の横サイズ。
-        :param threshold: 二値化の際の閾値
+        :param drawer: drawer of the comicolorization task
+        :param drawer_sr: draw of the super resolution task
+        :param image: source panel iamge
+        :param reference_image: reference image
+        :param resize_width: width of input image for neural network model
+        :param threshold: threshold by using binarizing input image
         """
         self.drawer = drawer
         self.drawer_sr = drawer_sr
@@ -80,12 +71,11 @@ class PanelPipeline(object):
         self.resize_width = resize_width
         self.threshold = threshold
 
-        self._size_pre = None  # 元の画像サイズ
-        self._crop_pre = None  # NN入力画像内のコマ画像の位置
+        self._crop_pre = None  # rectangle of panel image in input image
 
     def process(self):
         """
-        着色処理
+        colorization process
         """
         small_input_image, big_input_image = self._pre_process()
         drawn_panel_image = self._draw_process(small_input_image, big_input_image)
@@ -93,14 +83,11 @@ class PanelPipeline(object):
 
     def _pre_process(self):
         """
-        前処理。
-        ・入力画像をリサイズ
-        ・二値化
-        ・白埋めして正方形に
+        * resize panel image
+        * binarization
+        * padding and make square image
         """
-        self._size_pre = self.image.size
-
-        small_crop_pre = _get_input_panel_rect(
+        small_crop_pre = _calc_input_panel_rect(
             panel_size=self.image.size,
             input_width=self.resize_width,
         )
@@ -111,14 +98,12 @@ class PanelPipeline(object):
             input_width=self.resize_width,
         )
 
-        # 超解像用の処理
-        self._crop_pre = _get_input_panel_rect(
+        self._crop_pre = _calc_input_panel_rect(
             panel_size=self.image.size,
             input_width=self.resize_width * 2,
         )
 
-        # 入力画像の作成
-        small_input_image = _make_binarized_image(input_panel_image, self.threshold)
+        small_input_image = make_binarized_image(input_panel_image, self.threshold)
         big_input_image = _make_input_panel_image(self.image, self._crop_pre, self.resize_width * 2)
 
         return small_input_image, big_input_image
@@ -148,10 +133,9 @@ class PanelPipeline(object):
 
     def _post_process(self, drawn_panel_image):
         """
-        後処理。
-        ・白や黒に近い画素値を白や黒にする
-        ・埋めた箇所をクロップ
-        ・元のサイズにリサイズ
+        * bring near white/black to white/black
+        * crop
+        * resize
         """
         array = numpy.array(drawn_panel_image)
         th = 255 / 6 / 2
@@ -159,8 +143,6 @@ class PanelPipeline(object):
         array[(array > 255 - th).all(axis=2)] = numpy.ones(3) * 255
         image = Image.fromarray(array)
 
-        if self._crop_pre is not None:
-            image = image.crop(self._crop_pre)
-        if self._size_pre is not None:
-            image = image.resize((self._size_pre), Image.BICUBIC)
+        image = image.crop(self._crop_pre)
+        image = image.resize(self.image.size, Image.BICUBIC)
         return image

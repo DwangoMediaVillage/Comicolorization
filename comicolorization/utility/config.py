@@ -11,34 +11,34 @@ def get_train_parser():
     parser.add_argument('--num_dataset_test', required=True, type=int)
     parser.add_argument('--network_model', choices=['SimpleConvolution', 'LTBC'], default='LTBC')
     parser.add_argument('--batchsize', type=int, default=5)
-    parser.add_argument('--size_image', type=int, default=128, help='画像サイズ')
+    parser.add_argument('--size_image', type=int, default=128, help='size of input image')
     parser.add_argument('--augmentation', type=bool, default=False)
     parser.add_argument('--size_image_augmentation', type=int, default=None,
-                        help='データ増強する際は、このサイズの画像がNNに入力される')
+                        help='size of input image on data augmentation')
     parser.add_argument('--gpu', type=int, default=-1)
     parser.add_argument('--max_epoch', type=int, default=1000)
     parser.add_argument('--save_result_iteration', type=int, default=100,
-                        help='学習済みモデルを保存する間隔')
+                        help='iteration of saving trained model')
     parser.add_argument('--random_seed_test', type=int, default=None)
     parser.add_argument('--path_pretrained_model', default=None)
     parser.add_argument('--disable_ltbc_global', action='store_true')
     parser.add_argument('--line_drawing_mode', choices=_line_drawing_mode, default=None,
-                        help='入力画像の線画化手法。未指定の場合はグレー画像')
+                        help='model of making line-drawing. if unspecified, gray scale image')
     parser.add_argument('--weight_decay', type=float, default=None)
-    parser.add_argument('--path_tag_list', type=str, help='全ラベルのリストjsonファイル')
-    parser.add_argument('--path_tag_list_each_image', type=str, help='画像ごとのラベルが書かれたjsonファイル')
+    parser.add_argument('--path_tag_list', type=str, help='path of json file written list of all labels')
+    parser.add_argument('--path_tag_list_each_image', type=str, help='path of json file written labels each image')
     parser.add_argument('--blend_mse_color', type=float, default=1.0)
     parser.add_argument('--alpha_ltbc_classification', type=float, default=None,
-                        help='LTBC論文のαの値。未指定の場合、classificationしない。')
+                        help='alpha value of LTBC paper. if unspecified, without classification')
     parser.add_argument('--ltbc_classification_num_output_list', type=int, nargs='+', default=[256, 205],
-                        help='LTBC論文のclassification networkの層数とノード数')
+                        help='number of nodes each layer of classification network')
     parser.add_argument('--use_histogram_network', action='store_true')
     parser.add_argument('--num_bins_histogram', type=int, default=85,
-                        help='与えるヒストグラムのbin数')
+                        help='number of bins of color histogram')
     parser.add_argument('--threshold_histogram_palette', type=float, default=None,
-                        help='パレットの閾値。これを指定するとパレットで学習する。')
+                        help='the threshold of palette mode. if unspecified, histogram mode')
     parser.add_argument('--use_multidimensional_histogram', action='store_true',
-                        help='３次元ヒストグラムにする')
+                        help='using multidimensional histogram')
     parser.add_argument('--reinput_mode', type=str, choices=['color'], default=None)
     parser.add_argument('--loss_blend_ratio_reinput', type=float, nargs='+', default=[])
     parser.add_argument('--separate_backward_reinput', action='store_true')
@@ -46,16 +46,16 @@ def get_train_parser():
     parser.add_argument('--use_residual_reinput', action='store_true')
     parser.add_argument('--ltbc_classification_loss_function', choices=['softmax', 'multi_label'], default='softmax')
     parser.add_argument('--max_pixel_drawing', type=int, default=None,
-                        help='学習時の部分塗り箇所の最大数。0~この値の箇所に部分塗りされる。未指定の場合は部分塗り非対応になる。')
+                        help='max number of colorize part for augmentation')
     parser.add_argument('--max_size_pixel_drawing', type=int, default=1,
-                        help='部分塗りの大きさの最大値')
+                        help='max size of colorize part')
     parser.add_argument('--loss_type', type=str, default='RGB')
     parser.add_argument('--mse_loss_mode', choices=['color_space', 'before_sigmoid'], default='color_space')
     parser.add_argument('--use_adversarial_network', action='store_true',
-                        help='判別器を用いてadversarial学習する')
+                        help='adversarial training with discriminator')
     parser.add_argument('--blend_adversarial_generator', type=float, default=1.0)
     parser.add_argument('--discriminator_first_pooling_size', type=int, default=1,
-                        help='判別器の入力画像に対してpoolingするときのサイズ。1の場合は何もしないのと同様。')
+                        help='size of pooling for discriminator\'s input image')
     parser.add_argument('--log_interval', type=int, default=10, help='number of logging interval iterations')
     return parser
 
