@@ -104,7 +104,7 @@ loss_maker = comicolorization.loss.LossMaker(
 
 # make trainer
 def make_optimizer(_model):
-    _optimizer = chainer.optimizers.Adam()
+    _optimizer = chainer.optimizers.Adam(alpha=args.optimizer_adam_alpha)
     _optimizer.setup(_model)
 
     if args.weight_decay is not None:

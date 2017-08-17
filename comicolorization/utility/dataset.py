@@ -28,14 +28,13 @@ def choose_dataset(
         random_flip = False
 
     def _make_dataset(paths, test: bool):
-        dataset = comicolorization.dataset.PILImageDatasetBase(
+        dataset = comicolorization.dataset.PILImageDataset(
             paths,
             resize=resize,
             random_crop_size=crop_size,
             random_flip=random_flip & test,
             test=test,
         )
-        dataset = comicolorization.dataset.PILImageDataset(dataset)
         dataset = comicolorization.dataset.ColorMonoImageDataset(dataset)
 
         # color space of input image

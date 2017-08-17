@@ -24,6 +24,7 @@ def get_train_parser():
     parser.add_argument('--disable_ltbc_global', action='store_true')
     parser.add_argument('--line_drawing_mode', choices=_line_drawing_mode, default=None,
                         help='model of making line-drawing. if unspecified, gray scale image')
+    parser.add_argument('--optimizer_adam_alpha', type=float, default=0.001)
     parser.add_argument('--weight_decay', type=float, default=None)
     parser.add_argument('--path_tag_list', type=str, help='path of json file written list of all labels')
     parser.add_argument('--path_tag_list_each_image', type=str, help='path of json file written labels each image')
