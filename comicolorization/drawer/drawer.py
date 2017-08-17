@@ -27,7 +27,7 @@ class Drawer(object):
         if args_train['network_model'] == 'SimpleConvolution':
             self.model = comicolorization.models.SimpleConvolution(loss_type=args_train['loss_type'])
         elif args_train['network_model'] == 'LTBC':
-            self.model, reinput_model = comicolorization.utility.model.make_ltbc(args_train)[0]
+            self.model, reinput_model = comicolorization.utility.model.make_ltbc(args_train)
             assert len(reinput_model) == 0
 
     def _get_path_model(self, iteration):
@@ -47,10 +47,18 @@ class Drawer(object):
         print("making iteration{}'s images...".format(iteration))
         chainer.serializers.load_npz(path_model, self.model)
         if self.gpu >= 0:
-            self.model.to_gpu(self.gpu)
+            chainer.cuda.get_device(self.gpu).use()  # Make the GPU current
+            self.model.to_gpu()
 
         self.target_iteration = iteration
         return True
+
+    @property
+    def can_input_color_image(self):
+        """
+        3チャンネルの入力（部分塗り）に対応しているか
+        """
+        return self.args_train['max_pixel_drawing'] is not None
 
     def draw(
             self,
@@ -59,6 +67,12 @@ class Drawer(object):
             histogram_image_array=None,
             histogram_array=None,
     ):
+        """
+        :param input_images_array: 入力画像。チャンネル数が3ならそのままforward、1なら白黒画像とみなしてチャンネル数3にpadding
+        """
+        if self.can_input_color_image and input_images_array.shape[1] == 1:
+            input_images_array = comicolorization.utility.image.padding_channel_1to3(input_images_array)
+
         images = comicolorization.utility.image.draw(
             self.model,
             input_images_array, rgb_images_array,

@@ -85,31 +85,15 @@ class PILImageDatasetBase(dataset_mixin.DatasetMixin):
         return path, image
 
 
-class PILImageDataset(dataset_mixin.DatasetMixin):
-    def __init__(self, paths, resize=None, random_crop_size=None, random_flip=False, test=False, root='.'):
-        self.base = PILImageDatasetBase(paths=paths, resize=resize, random_crop_size=random_crop_size,
-                                        random_flip=random_flip, test=test, root=root)
-
-    def __len__(self):
-        return len(self.base)
-
+class PILImageDataset(PILImageDatasetBase):
     def get_example(self, i) -> Image:
-        return self.base[i][1]
+        return super().get_example(i)[1]
 
 
 class ColorMonoImageDataset(dataset_mixin.DatasetMixin, InputOutputDatsetInterface):
-    def __init__(self, paths, resize=None, random_crop_size=None, random_flip=False, test=False, root='.',
-                 dtype=numpy.float32):
-        if isinstance(paths, six.string_types):
-            with open(paths) as paths_file:
-                paths = [path.strip() for path in paths_file]
-        self._paths = paths
-        self._root = root
-        self._resize = resize
+    def __init__(self, base: PILImageDataset, dtype=numpy.float32):
         self._dtype = dtype
-        self._test = test
-        self.base = PILImageDataset(paths, resize=resize, random_crop_size=random_crop_size, random_flip=random_flip,
-                                    test=test, root=root)
+        self.base = base
 
     def __len__(self):
         return len(self.base)
@@ -135,19 +119,17 @@ class ColorMonoImageDataset(dataset_mixin.DatasetMixin, InputOutputDatsetInterfa
 
 
 class LabImageDataset(dataset_mixin.DatasetMixin, InputOutputDatsetInterface):
-    def __init__(self, paths, resize=None, random_crop_size=None, random_flip=False, test=False, root='.',
-                 dtype=numpy.float32):
-        self._dtype = dtype
-        self.base = ColorMonoImageDataset(paths, resize=resize, random_crop_size=random_crop_size,
-                                          random_flip=random_flip, test=test, root=root)
+    def __init__(self, base: ColorMonoImageDataset):
+        self.base = base
 
     def __len__(self):
         return len(self.base)
 
     def get_example(self, i) -> (numpy.ndarray, numpy.ndarray, numpy.ndarray):
         rgb_image_data, gray_image_data, _ = self.base[i]
+        dtype = rgb_image_data.dtype
         image_data = rgb_image_data.transpose(1, 2, 0) / 255
-        lab_image_data = rgb2lab(image_data).transpose(2, 0, 1).astype(self._dtype)
+        lab_image_data = rgb2lab(image_data).transpose(2, 0, 1).astype(dtype)
         luminous_image_data = numpy.expand_dims(lab_image_data[0], axis=0)
         return lab_image_data, luminous_image_data, rgb_image_data
 
@@ -162,10 +144,8 @@ class LabImageDataset(dataset_mixin.DatasetMixin, InputOutputDatsetInterface):
 
 
 class LabOnlyChromaticityDataset(dataset_mixin.DatasetMixin, InputOutputDatsetInterface):
-    def __init__(self, paths, resize=None, random_crop_size=None, random_flip=False, test=False, root='.', dtype=numpy.float32):
-        self._dtype = dtype
-        self.base = LabImageDataset(paths, resize=resize, random_crop_size=random_crop_size, random_flip=random_flip,
-                                    test=test, root=root)
+    def __init__(self, base: LabImageDataset):
+        self.base = base
 
     def __len__(self):
         return len(self.base)
@@ -185,11 +165,8 @@ class LabOnlyChromaticityDataset(dataset_mixin.DatasetMixin, InputOutputDatsetIn
 
 
 class LineDrawingDatasetBase(dataset_mixin.DatasetMixin, InputOutputDatsetInterface):
-    def __init__(self, paths, resize=None, random_crop_size=None, random_flip=False, test=False, root='.',
-                 dtype=numpy.float32):
-        self._dtype = dtype
-        self.base = LabImageDataset(paths, resize=resize, random_crop_size=random_crop_size, random_flip=random_flip,
-                                    test=test, root=root)
+    def __init__(self, base: LabImageDataset):
+        self.base = base
 
     def __len__(self):
         return len(self.base)
@@ -297,13 +274,17 @@ class LabDilateDiffImageDataset(LineDrawingDatasetBase):
 
 
 class LabSeveralPixelDrawingImageDataset(dataset_mixin.DatasetMixin, InputOutputDatsetInterface):
-    def __init__(self, base_lineimage_dataset: InputOutputDatsetInterface, max_point: int, max_size: int,
-                 fix_position=False):
+    def __init__(
+            self,
+            base: LineDrawingDatasetBase,
+            max_point: int,
+            max_size: int,
+            fix_position=False,
+    ):
         """
-        :param base_lineimage_dataset:
         :param max_point: max number of drawing point (is not pixel size)
         """
-        self.base = base_lineimage_dataset
+        self.base = base
         self.max_point = max_point
         self.max_size = max_size
 
@@ -359,11 +340,8 @@ class LabSeveralPixelDrawingImageDataset(dataset_mixin.DatasetMixin, InputOutput
 
 
 class BinarizationImageDataset(dataset_mixin.DatasetMixin):
-    def __init__(self, paths, resize=None, random_crop_size=None, random_flip=False, test=False, root='.',
-                 dtype=numpy.float32):
-        self._dtype = dtype
-        self.base = LabImageDataset(paths, resize=resize, random_crop_size=random_crop_size, random_flip=random_flip,
-                                    test=test, root=root)
+    def __init__(self, base: LabImageDataset):
+        self.base = base
 
     def __len__(self):
         return len(self.base)

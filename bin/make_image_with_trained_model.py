@@ -142,7 +142,9 @@ for path_result_directory in paths_result_directory:
 
     histogram_dataset = []
     if args.reference_image_path is not None:
-        histogram_dataset = comicolorization.dataset.LabImageDataset(args.reference_image_path)
+        histogram_dataset = comicolorization.dataset.ColorMonoImageDataset(
+            comicolorization.dataset.PILImageDataset(args.reference_image_path),
+        )
 
     target_iteration = args.target_iteration
     if target_iteration is None:

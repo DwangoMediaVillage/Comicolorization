@@ -27,95 +27,78 @@ def choose_dataset(
         crop_size = None
         random_flip = False
 
-    train_paths = paths[:-num_dataset_test]
-    test_paths = paths[-num_dataset_test:]
-    train_for_evaluate_paths = paths[:num_dataset_test]
+    def _make_dataset(paths, test: bool):
+        dataset = comicolorization.dataset.PILImageDatasetBase(
+            paths,
+            resize=resize,
+            random_crop_size=crop_size,
+            random_flip=random_flip & test,
+            test=test,
+        )
+        dataset = comicolorization.dataset.PILImageDataset(dataset)
+        dataset = comicolorization.dataset.ColorMonoImageDataset(dataset)
 
-    if use_binarization_dataset:
-        base_dataset_class = comicolorization.dataset.BinarizationImageDataset
-    elif line_drawing_mode is not None:
-        if line_drawing_mode == 'otsu_threshold':
-            base_dataset_class = comicolorization.dataset.LabOtsuThresholdImageDataset
-        elif line_drawing_mode == 'adaptive_threshold':
-            base_dataset_class = comicolorization.dataset.LabAdaptiveThresholdImageDataset
-        elif line_drawing_mode == 'canny':
-            base_dataset_class = comicolorization.dataset.LabCannyImageDataset
-        elif line_drawing_mode == 'three_value_threshold':
-            base_dataset_class = comicolorization.dataset.LabThreeValueThresholdImageDataset
-        elif line_drawing_mode == 'dilate-diff':
-            base_dataset_class = comicolorization.dataset.LabDilateDiffImageDataset
+        # 入力画像の色空間
+        if loss_type == 'RGB':
+            pass
+        elif loss_type == 'Lab' or loss_type == 'ab' or use_binarization_dataset:
+            dataset = comicolorization.dataset.LabImageDataset(dataset)
+
+            if use_binarization_dataset:
+                dataset = comicolorization.dataset.BinarizationImageDataset(dataset)
+            elif loss_type == 'ab':
+                dataset = comicolorization.dataset.LabOnlyChromaticityDataset(dataset)
         else:
-            raise NotImplementedError
-        assert loss_type == "Lab"
-    elif loss_type == 'RGB':
-        base_dataset_class = comicolorization.dataset.ColorMonoImageDataset
-    elif loss_type == 'Lab':
-        base_dataset_class = comicolorization.dataset.LabImageDataset
-    elif loss_type == 'ab':
-        base_dataset_class = comicolorization.dataset.LabOnlyChromaticityDataset
-    else:
-        raise NotImplementedError
+            raise ValueError(loss_type)
 
-    train_dataset = base_dataset_class(
-        train_paths,
-        resize=resize,
-        random_crop_size=crop_size,
-        random_flip=random_flip,
-        test=False
-    )
-    test_dataset = base_dataset_class(
-        test_paths,
-        resize=resize,
-        random_crop_size=crop_size,
-        test=True
-    )
-    train_for_evaluate_dataset = base_dataset_class(
-        train_for_evaluate_paths,
-        resize=resize,
-        random_crop_size=crop_size,
-        test=True
-    )
+        # 入力画像の線画化
+        if line_drawing_mode is not None:
+            if line_drawing_mode == 'otsu_threshold':
+                dataset = comicolorization.dataset.LabOtsuThresholdImageDataset(dataset)
+            elif line_drawing_mode == 'adaptive_threshold':
+                dataset = comicolorization.dataset.LabAdaptiveThresholdImageDataset(dataset)
+            elif line_drawing_mode == 'canny':
+                dataset = comicolorization.dataset.LabCannyImageDataset(dataset)
+            elif line_drawing_mode == 'three_value_threshold':
+                dataset = comicolorization.dataset.LabThreeValueThresholdImageDataset(dataset)
+            elif line_drawing_mode == 'dilate-diff':
+                dataset = comicolorization.dataset.LabDilateDiffImageDataset(dataset)
+            else:
+                raise ValueError(line_drawing_mode)
 
-    if max_pixel_drawing is not None:
-        def _make_dataset(base_lineimage_dataset, fix_position):
-            return comicolorization.dataset.LabSeveralPixelDrawingImageDataset(
-                base_lineimage_dataset=base_lineimage_dataset,
+        # 部分塗り
+        if max_pixel_drawing is not None:
+            dataset = comicolorization.dataset.LabSeveralPixelDrawingImageDataset(
+                base=dataset,
                 max_point=max_pixel_drawing,
                 max_size=max_size_pixel_drawing,
-                fix_position=fix_position,
+                fix_position=test,
             )
 
-        train_dataset = _make_dataset(train_dataset, fix_position=False)
-        test_dataset = _make_dataset(test_dataset, fix_position=True)
-        train_for_evaluate_dataset = _make_dataset(train_for_evaluate_dataset, fix_position=True)
-
-    if not use_ltbc_classification:
-        pass
-    elif path_tag_list is None:
-        def _make_dataset(paths, base_dataset):
-            return comicolorization.dataset.LabeledByDirectoryDataset(
+        # classification
+        if not use_ltbc_classification:
+            pass
+        elif path_tag_list is None:
+            dataset = comicolorization.dataset.LabeledByDirectoryDataset(
                 paths,
-                base_dataset=base_dataset,
+                base_dataset=dataset,
             )
-
-        train_dataset = _make_dataset(train_paths, train_dataset)
-        test_dataset = _make_dataset(test_paths, test_dataset)
-        train_for_evaluate_dataset = _make_dataset(train_for_evaluate_paths, train_for_evaluate_dataset)
-    else:
-        def _make_dataset(paths, base_dataset):
-            return comicolorization.dataset.MultiTagLabeledDataset(
+        else:
+            dataset = comicolorization.dataset.MultiTagLabeledDataset(
                 paths,
-                base_dataset=base_dataset,
+                base_dataset=dataset,
                 path_tag_list=path_tag_list,
                 path_tag_list_each_image=path_tag_list_each_image,
             )
 
-        train_dataset = _make_dataset(train_paths, train_dataset)
-        test_dataset = _make_dataset(test_paths, test_dataset)
-        train_for_evaluate_dataset = _make_dataset(train_for_evaluate_paths, train_for_evaluate_dataset)
+        return dataset
+
+    train_paths = paths[:-num_dataset_test]
+    test_paths = paths[-num_dataset_test:]
+    train_for_evaluate_paths = paths[:num_dataset_test]
 
     return {
-        'train': train_dataset,
-        'test': test_dataset,
-        'train_for_evaluate': train_for_evaluate_dataset,
+        'train': _make_dataset(train_paths, test=False),
+        'test': _make_dataset(test_paths, test=True),
+        'train_for_evaluate': _make_dataset(train_for_evaluate_paths, test=True),
     }

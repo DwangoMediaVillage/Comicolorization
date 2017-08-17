@@ -1,12 +1,11 @@
 import cv2
 import numpy
-from chainer.dataset import dataset_mixin
 from PIL import Image
 
 from .image_dataset import PILImageDatasetBase
 
 
-class FaceImageDataset(dataset_mixin.DatasetMixin):
+class FaceImageDataset(PILImageDatasetBase):
     """
     Dataset of cropped facial region
 
@@ -25,16 +24,13 @@ class FaceImageDataset(dataset_mixin.DatasetMixin):
         :param input_resize: set it if you want to resize image **before** running face detector
         :param output_resize: target size of output image
         """
-        self.base = PILImageDatasetBase(paths=paths, resize=input_resize, root=root)
+        super().__init__(paths=paths, resize=input_resize, root=root)
         self.classifier = cv2.CascadeClassifier(classifier_path)
         self.margin_ratio = margin_ratio
         self.output_resize = output_resize
 
-    def __len__(self):
-        return len(self.base)
-
     def get_example(self, i) -> (str, Image):
-        path, image = self.base[i]
+        path, image = super().get_example(i)
         image_array = numpy.asarray(image)
         image_height, image_width = image_array.shape[:2]
         if len(image_array.shape) == 2:  # gray image

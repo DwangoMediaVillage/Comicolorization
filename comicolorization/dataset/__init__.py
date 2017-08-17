@@ -1,3 +1,4 @@
+from .image_dataset import PILImageDatasetBase
 from .image_dataset import PILImageDataset
 from .image_dataset import InputOutputDatsetInterface
 from .image_dataset import ColorMonoImageDataset

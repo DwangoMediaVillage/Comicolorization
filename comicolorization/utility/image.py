@@ -130,6 +130,11 @@ def rebalance_top_histogram(histogram, rate: float):
     return output
 
 
+def padding_channel_1to3(array):
+    assert array.ndim == 4 and array.shape[1] == 1
+    return numpy.pad(array, ((0, 0), (0, 2), (0, 0), (0, 0)), mode='constant')
+
+
 def draw(
         model, input_images_array,
         rgb_images_array=None,
