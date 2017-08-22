@@ -29,7 +29,8 @@ class FaceImageDataset(PILImageDatasetBase):
         self.margin_ratio = margin_ratio
         self.output_resize = output_resize
 
-    def get_example(self, i) -> (str, Image):
+    def get_example(self, i):
+        # type: (any) -> (str, Image)
         path, image = super().get_example(i)
         image_array = numpy.asarray(image)
         image_height, image_width = image_array.shape[:2]

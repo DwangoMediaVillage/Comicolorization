@@ -1,3 +1,4 @@
+from __future__ import division
 import math
 import chainer
 
@@ -6,7 +7,7 @@ class Discriminator(chainer.Chain):
     def __init__(self, size, first_pooling_size=1):
         last_size = size // (2 ** 4) // first_pooling_size
 
-        super().__init__(
+        super(Discriminator,self).__init__(
             c0=chainer.links.Convolution2D(3, 64, 4, stride=2, pad=1),
             c1=chainer.links.Convolution2D(64, 128, 4, stride=2, pad=1),
             c2=chainer.links.Convolution2D(128, 256, 4, stride=2, pad=1),

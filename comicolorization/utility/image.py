@@ -12,7 +12,8 @@ def array_to_image(
         mode='RGB',
         color_normalize=False,
         linedrawing=None,
-) -> typing.List[Image.Image]:
+):
+    # type: (any,any,any,any,any) -> typing.List[Image.Image]
     """
     :param color_images_array: shape is [number of image, channel(3), width, height]
     :param gray_images_array: used when mode=='ab' or 'gray'
@@ -68,7 +69,8 @@ def array_to_image(
     return [Image.fromarray(image_array) for image_array in rgb_images_array]
 
 
-def save_images(images: typing.List[Image.Image], path_directory, prefix_filename, index_base=0):
+def save_images(images, path_directory, prefix_filename, index_base=0):
+    # type: (typing.List[Image.Image], any, any, any) -> None
     """
     save image as [prefix_filename][index of image].png
     """
@@ -84,10 +86,11 @@ def save_images(images: typing.List[Image.Image], path_directory, prefix_filenam
 def make_histogram(
         image_array,
         num_bins,
-        multidim: bool,
+        multidim,
         threshold_palette=None,
         ranges=((0, 255), (0, 255), (0, 255)),
 ):
+    # type: (any, any, bool, any, any) -> any
     channel, x, y = image_array.shape
     if not multidim:
         histogram_one = []
@@ -109,7 +112,8 @@ def make_histogram(
     return hist.astype(image_array.dtype)
 
 
-def rebalance_top_histogram(histogram, rate: float):
+def rebalance_top_histogram(histogram, rate):
+    # type: (any, float) -> any
     # if rate > 1, collect to top bin
     # if rate < 1, distribute from top bin
     assert histogram.ndim == 1

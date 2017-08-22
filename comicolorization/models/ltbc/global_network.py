@@ -3,15 +3,15 @@ import chainer
 
 class GlobalNetwork(chainer.Chain):
     def __init__(self, use_classification=False):
-        super().__init__(
-            conv1_1=chainer.functions.Convolution2D(
+        super(GlobalNetwork,self).__init__(
+            conv1_1=chainer.links.Convolution2D(
                 in_channels=512,
                 out_channels=512,
                 ksize=3,
                 stride=2,
                 pad=1),
             bn1_1=chainer.links.BatchNormalization(512),
-            conv1_2=chainer.functions.Convolution2D(
+            conv1_2=chainer.links.Convolution2D(
                 in_channels=None,
                 out_channels=512,
                 ksize=3,
@@ -19,14 +19,14 @@ class GlobalNetwork(chainer.Chain):
                 pad=1),
             bn1_2=chainer.links.BatchNormalization(512),
 
-            conv2_1=chainer.functions.Convolution2D(
+            conv2_1=chainer.links.Convolution2D(
                 in_channels=None,
                 out_channels=512,
                 ksize=3,
                 stride=2,
                 pad=1),
             bn2_1=chainer.links.BatchNormalization(512),
-            conv2_2=chainer.functions.Convolution2D(
+            conv2_2=chainer.links.Convolution2D(
                 in_channels=None,
                 out_channels=512,
                 ksize=3,
@@ -44,7 +44,8 @@ class GlobalNetwork(chainer.Chain):
 
         self.use_classification = use_classification
 
-    def __call__(self, x, test: bool = False):
+    def __call__(self, x, test=False):
+        # type: (any, bool) -> any
         h = x
         h = chainer.functions.relu(self.bn1_1(self.conv1_1(h), test=test))
         h = chainer.functions.relu(self.bn1_2(self.conv1_2(h), test=test))

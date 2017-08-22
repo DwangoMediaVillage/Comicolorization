@@ -9,12 +9,13 @@ class LossMaker(object):
     def __init__(
             self,
             args,
-            model: comicolorization.models.BaseModel,
-            model_reinput_list: typing.List[comicolorization.models.BaseModel],
+            model,
+            model_reinput_list,
             range_input_luminance,
             range_output_luminance,
-            discriminator: comicolorization.models.Discriminator
+            discriminator
     ):
+        # type: (any, comicolorization.models.BaseModel, typing.List[comicolorization.models.BaseModel], any, any, comicolorization.models.Discriminator) -> None
         self.args = args
         self.model = model
         self.model_reinput_list = model_reinput_list
@@ -176,7 +177,7 @@ class LossMaker(object):
             'reinput': loss_detail_reinput,
         }
 
-    def calc_loss(self, *_args, test):
+    def calc_loss(self, test, *_args):
         image_target, image_gray, image_rgb = _args[:3]
 
         if not self.use_classification:
@@ -217,5 +218,5 @@ class LossMaker(object):
         ]
 
     def loss_test(self, *_args):
-        loss_detail = self.calc_loss(*_args, test=True)
+        loss_detail = self.calc_loss(test=True, *_args)
         return loss_detail['sum_loss']

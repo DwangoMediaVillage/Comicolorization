@@ -4,8 +4,8 @@ import typing
 
 class FusionLayer(chainer.Chain):
     def __init__(self):
-        super().__init__(
-            conv=chainer.functions.Convolution2D(
+        super(FusionLayer,self).__init__(
+            conv=chainer.links.Convolution2D(
                 in_channels=None,
                 out_channels=256,
                 ksize=1,
@@ -14,10 +14,11 @@ class FusionLayer(chainer.Chain):
 
     def __call__(
             self,
-            h: chainer.Variable,
-            one_dimension_feature_list: typing.List[chainer.Variable],
-            test: bool = False,
+            h,
+            one_dimension_feature_list,
+            test=False,
     ):
+        # type: (chainer.Variable, typing.List[chainer.Variable], bool) -> any
         batchsize = h.data.shape[0]
         height = h.data.shape[2]
         width = h.data.shape[3]

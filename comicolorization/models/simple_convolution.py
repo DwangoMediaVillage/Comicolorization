@@ -8,7 +8,7 @@ from ..utility.image import array_to_image
 class SimpleConvolution(BaseModel):
     def __init__(self, loss_type='RGB'):
         out_channels = 2 if loss_type == 'ab' else 3
-        super().__init__(
+        super(SimpleConvolution,self).__init__(
             conv1=chainer.functions.Convolution2D(
                 in_channels=1,
                 out_channels=64,
@@ -38,7 +38,8 @@ class SimpleConvolution(BaseModel):
         self.loss_type = loss_type
         self.out_channels = out_channels
 
-    def generate_rgb_image(self, gray_images_array: numpy.ndarray, **kwargs):
+    def generate_rgb_image(self, gray_images_array, **kwargs):
+        # type: (any, numpy.ndarray, **any) -> any
         color_images_array = self(gray_images_array, test=True).data
         images = array_to_image(
             color_images_array,
@@ -47,7 +48,8 @@ class SimpleConvolution(BaseModel):
         )
         return images
 
-    def __call__(self, x: chainer.Variable, test=False):
+    def __call__(self, x, test=False):
+        # type: (chainer.Variable, bool) -> any
         h = x
         h = chainer.functions.relu(self.conv1(h))
         h = chainer.functions.relu(self.conv2(h))
