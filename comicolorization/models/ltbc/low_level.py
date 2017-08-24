@@ -3,7 +3,7 @@ import chainer
 
 class LowLevelNetwork(chainer.Chain):
     def __init__(self):
-        super(LowLevelNetwork,self).__init__(
+        super(LowLevelNetwork, self).__init__(
             conv1_1=chainer.links.Convolution2D(
                 in_channels=None,
                 out_channels=64,

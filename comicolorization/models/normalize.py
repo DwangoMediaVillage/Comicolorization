@@ -6,7 +6,7 @@ from comicolorization import utility
 class ColorNormalize(chainer.Chain):
     def __init__(self, type, in_min, in_max):
         # type: (str, typing.Tuple, typing.Tuple) -> None
-        super(ColorNormalize,self).__init__()
+        super(ColorNormalize, self).__init__()
         self.type = type
         self.in_min = in_min
         self.in_max = in_max

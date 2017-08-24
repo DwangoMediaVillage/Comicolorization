@@ -9,7 +9,7 @@ class ClassificationNetwork(chainer.Chain):
 
     def __init__(self, num_output_list):
         # type: (typing.List[int]) -> any
-        super(ClassificationNetwork,self).__init__()
+        super(ClassificationNetwork, self).__init__()
         self.num_output_list = num_output_list
 
         for i, num_output in enumerate(num_output_list):

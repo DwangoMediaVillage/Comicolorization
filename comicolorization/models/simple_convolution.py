@@ -8,7 +8,7 @@ from ..utility.image import array_to_image
 class SimpleConvolution(BaseModel):
     def __init__(self, loss_type='RGB'):
         out_channels = 2 if loss_type == 'ab' else 3
-        super(SimpleConvolution,self).__init__(
+        super(SimpleConvolution, self).__init__(
             conv1=chainer.functions.Convolution2D(
                 in_channels=1,
                 out_channels=64,

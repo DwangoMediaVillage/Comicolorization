@@ -40,7 +40,7 @@ class Ltbc(BaseModel):
             assert use_histogram, "when using multidimensional histogram, should set `use_histogram=True`"
 
         out_channels = 2 if loss_type == 'ab' else 3
-        super(Ltbc,self).__init__(
+        super(Ltbc, self).__init__(
             low_level=LowLevelNetwork(),
             mid_level=MidLevelNetwork(),
             fusion_layer=FusionLayer(),

@@ -11,6 +11,7 @@ from skimage.color import rgb2lab
 from skimage import exposure
 import cv2
 import time
+import typing
 
 from comicolorization.utility import color
 
@@ -57,7 +58,7 @@ class PILImageDatasetBase(dataset_mixin.DatasetMixin):
         return len(self._paths)
 
     def get_example(self, i):
-        # type: (any) -> (str, Image)
+        # type: (any) -> typing.Tuple[str, Image]
         path = os.path.join(self._root, self._paths[i])
         image = Image.open(path)
 
@@ -91,7 +92,7 @@ class PILImageDatasetBase(dataset_mixin.DatasetMixin):
 class PILImageDataset(PILImageDatasetBase):
     def get_example(self, i):
         # type: (any) -> Image
-        return super(PILImageDataset,self).get_example(i)[1]
+        return super(PILImageDataset, self).get_example(i)[1]
 
 
 class ColorMonoImageDataset(dataset_mixin.DatasetMixin, InputOutputDatsetInterface):
@@ -104,7 +105,7 @@ class ColorMonoImageDataset(dataset_mixin.DatasetMixin, InputOutputDatsetInterfa
         return len(self.base)
 
     def get_example(self, i):
-        # type: (any) -> (numpy.ndarray, numpy.ndarray, numpy.ndarray)
+        # type: (any) -> typing.Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]
         """
         :return: (RGB array [0~255], gray array [0~255], RGB array [0~255])
         """
@@ -126,14 +127,14 @@ class ColorMonoImageDataset(dataset_mixin.DatasetMixin, InputOutputDatsetInterfa
 
 class LabImageDataset(dataset_mixin.DatasetMixin, InputOutputDatsetInterface):
     def __init__(self, base):
-        # type: (ColorMonoImageDataset)-> None
+        # type: (ColorMonoImageDataset) -> None
         self.base = base
 
     def __len__(self):
         return len(self.base)
 
     def get_example(self, i):
-        # type: (any) -> (numpy.ndarray, numpy.ndarray, numpy.ndarray)
+        # type: (any) -> typing.Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]
         rgb_image_data, gray_image_data, _ = self.base[i]
         dtype = rgb_image_data.dtype
         image_data = rgb_image_data.transpose(1, 2, 0) / 255
@@ -160,7 +161,7 @@ class LabOnlyChromaticityDataset(dataset_mixin.DatasetMixin, InputOutputDatsetIn
         return len(self.base)
 
     def get_example(self, i):
-        # type: (any) -> (numpy.ndarray, numpy.ndarray, numpy.ndarray)
+        # type: (any) -> typing.Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]
         lab_image_data, luminous_image_data, rgb_image_data = self.base[i]
         return lab_image_data[1:], luminous_image_data, rgb_image_data
 
@@ -183,7 +184,7 @@ class LineDrawingDatasetBase(dataset_mixin.DatasetMixin, InputOutputDatsetInterf
         return len(self.base)
 
     def get_example(self, i):
-        # type: (any) -> (numpy.ndarray, numpy.ndarray, numpy.ndarray)
+        # type: (any) -> typing.Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]
         lab_image_data, luminous_image_data, rgb_image_data = self.base[i]
         luminous_image_data = numpy.squeeze(luminous_image_data).astype(numpy.uint8)
         linedrawing = self.convert_to_linedrawing(luminous_image_data)
@@ -307,7 +308,7 @@ class LabSeveralPixelDrawingImageDataset(dataset_mixin.DatasetMixin, InputOutput
         return len(self.base)
 
     def get_example(self, i):
-        # type: (any) -> (numpy.ndarray, numpy.ndarray, numpy.ndarray)
+        # type: (any) -> typing.Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]
         lab_image_data, linedrawing, rgb_image_data = self.base[i]
         color_linedrawing = numpy.pad(linedrawing, ((0, 2), (0, 0), (0, 0)), mode='constant', constant_values=0)
 
@@ -362,7 +363,7 @@ class BinarizationImageDataset(dataset_mixin.DatasetMixin):
         return len(self.base)
 
     def get_example(self, i):
-        # type: (any) -> (numpy.ndarray, numpy.ndarray, numpy.ndarray)
+        # type: (any) -> typing.Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]
         lab_image_data, luminous_image_data, rgb_image_data = self.base[i]
 
         threshold = skimage.filters.threshold_otsu(luminous_image_data)

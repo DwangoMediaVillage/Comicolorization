@@ -23,7 +23,7 @@ class HistogramNetwork(chainer.Chain):
         :param threshold_palette: the threshold of palette mode. if None, then histogram mode.
         :param use_multidimensional: if it is True, multidimensional histogram mode
         """
-        super(HistogramNetwork,self).__init__()
+        super(HistogramNetwork, self).__init__()
 
         self.ranges = ranges
         self.num_bins = num_bins

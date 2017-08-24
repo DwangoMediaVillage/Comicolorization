@@ -47,7 +47,7 @@ def _make_ltbc_reinput(main_model, setting):
 
 
 def make_ltbc(setting):
-    # type: (typing.Dict) -> (any, any)
+    # type: (typing.Dict) -> typing.Tuple[any, any]
     model_main = _make_ltbc_main(setting)
     mdoel_reinput_list = _make_ltbc_reinput(model_main, setting)
     return model_main, mdoel_reinput_list

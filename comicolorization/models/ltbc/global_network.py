@@ -3,7 +3,7 @@ import chainer
 
 class GlobalNetwork(chainer.Chain):
     def __init__(self, use_classification=False):
-        super(GlobalNetwork,self).__init__(
+        super(GlobalNetwork, self).__init__(
             conv1_1=chainer.links.Convolution2D(
                 in_channels=512,
                 out_channels=512,

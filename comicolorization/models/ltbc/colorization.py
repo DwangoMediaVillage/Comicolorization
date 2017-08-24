@@ -3,7 +3,7 @@ import chainer
 
 class ColorizationNetwork(chainer.Chain):
     def __init__(self, output_channels=2):
-        super(ColorizationNetwork,self).__init__(
+        super(ColorizationNetwork, self).__init__(
             conv1_1=chainer.links.Convolution2D(
                 in_channels=256,
                 out_channels=128,

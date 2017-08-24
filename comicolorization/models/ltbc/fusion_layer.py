@@ -4,7 +4,7 @@ import typing
 
 class FusionLayer(chainer.Chain):
     def __init__(self):
-        super(FusionLayer,self).__init__(
+        super(FusionLayer, self).__init__(
             conv=chainer.links.Convolution2D(
                 in_channels=None,
                 out_channels=256,
