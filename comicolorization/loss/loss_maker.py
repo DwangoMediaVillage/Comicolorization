@@ -212,6 +212,6 @@ class LossMaker(object):
             'loss_adversarial/accuracy_discriminator',
         ]
 
-    def loss_test(self, image_target, image_gray, image_rgb):
-        loss_detail = self.calc_loss(image_target, image_gray, image_rgb, test=True)
+    def loss_test(self, image_target, image_gray, image_rgb, label=None):
+        loss_detail = self.calc_loss(image_target, image_gray, image_rgb, label, test=True)
         return loss_detail['sum_loss']
