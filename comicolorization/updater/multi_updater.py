@@ -7,15 +7,16 @@ class MultiUpdater(chainer.training.StandardUpdater):
     def __init__(
             self,
             args,
-            loss_maker: comicolorization.loss.LossMaker,
+            loss_maker,
             main_optimizer,
-            main_lossfun: typing.Callable[[typing.Dict], any],
-            reinput_optimizer: typing.List[chainer.Optimizer] = None,
-            reinput_lossfun: typing.Callable[[int, typing.Dict], any] = None,
+            main_lossfun,
+            reinput_optimizer=None,
+            reinput_lossfun=None,
             discriminator_optimizer=None,
-            discriminator_lossfun: typing.Callable[[typing.Dict], any] = None,
+            discriminator_lossfun=None,
             *_args, **kwargs
     ):
+        # type: (any, comicolorization.loss.LossMaker, any, typing.Callable[[typing.Dict], any], typing.List[chainer.Optimizer], typing.Callable[[int, typing.Dict], any], any, typing.Callable[[typing.Dict], any], *any, **any) -> None
         optimizers = {'main': main_optimizer}
         if reinput_optimizer is not None:
             for i_reinput, optimizer in enumerate(reinput_optimizer):

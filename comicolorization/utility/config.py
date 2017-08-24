@@ -63,7 +63,8 @@ def get_train_parser():
     return parser
 
 
-def get_default_train_args() -> typing.Dict[str, object]:
+def get_default_train_args():
+    # type: (any) -> typing.Dict[str, object]
     parser = get_train_parser()
     args = parser.parse_args('dummy dummy --num_dataset_test 0'.split())
     return args.__dict__

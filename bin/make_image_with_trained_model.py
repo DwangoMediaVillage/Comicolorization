@@ -111,7 +111,7 @@ for path_result_directory in paths_result_directory:
         line_drawing_mode = None
         size_image = None
     else:
-        augmentation = args_train['augmentation']
+        augmentation = False
         size_image = [args_train['size_image'], args_train['size_image']]
 
     datasets = comicolorization.utility.dataset.choose_dataset(

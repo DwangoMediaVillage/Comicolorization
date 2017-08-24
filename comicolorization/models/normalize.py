@@ -4,8 +4,9 @@ from comicolorization import utility
 
 
 class ColorNormalize(chainer.Chain):
-    def __init__(self, type: str, in_min: typing.Tuple, in_max: typing.Tuple):
-        super().__init__()
+    def __init__(self, type, in_min, in_max):
+        # type: (str, typing.Tuple, typing.Tuple) -> None
+        super(ColorNormalize, self).__init__()
         self.type = type
         self.in_min = in_min
         self.in_max = in_max

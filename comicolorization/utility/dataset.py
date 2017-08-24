@@ -4,20 +4,21 @@ import comicolorization
 
 
 def choose_dataset(
-        paths: typing.Iterable,
-        num_dataset_test: int,
-        loss_type: str,
-        augmentation: bool,
-        size_image_augmentation: typing.List[int],
-        size_image: typing.List[int],
-        use_ltbc_classification: bool,
-        path_tag_list: str,
-        path_tag_list_each_image: str,
-        line_drawing_mode: str,
-        max_pixel_drawing: int,
-        max_size_pixel_drawing: int,
-        use_binarization_dataset: bool,
+        paths,
+        num_dataset_test,
+        loss_type,
+        augmentation,
+        size_image_augmentation,
+        size_image,
+        use_ltbc_classification,
+        path_tag_list,
+        path_tag_list_each_image,
+        line_drawing_mode,
+        max_pixel_drawing,
+        max_size_pixel_drawing,
+        use_binarization_dataset,
 ):
+    # type: (typing.Iterable, int, str, bool, typing.List[int], typing.List[int], bool, str, str, str, int, int, bool) -> any
     if augmentation:
         resize = size_image_augmentation
         crop_size = size_image
@@ -27,7 +28,8 @@ def choose_dataset(
         crop_size = None
         random_flip = False
 
-    def _make_dataset(paths, test: bool):
+    def _make_dataset(paths, test):
+        # type: (any, bool) -> any
         dataset = comicolorization.dataset.PILImageDataset(
             paths,
             resize=resize,

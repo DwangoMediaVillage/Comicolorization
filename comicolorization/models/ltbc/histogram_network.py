@@ -1,3 +1,4 @@
+from __future__ import division
 from typing import Tuple
 
 import chainer
@@ -7,12 +8,13 @@ import numpy
 class HistogramNetwork(chainer.Chain):
     def __init__(
             self,
-            ranges: Tuple[Tuple[int, int], ...],
-            num_bins: int,
-            threshold_palette: float,
+            ranges,
+            num_bins,
+            threshold_palette,
             use_multidimensional=False,
             dtype=numpy.float32,
     ):
+        # type: (Tuple[Tuple[int, int], ...], int, float, any, any) -> None
         """
         if not multidimensional: output size will be [batch, num_bins*channel]
         if multidimensional: output size will be [batch, num_bins^channel]
@@ -21,7 +23,7 @@ class HistogramNetwork(chainer.Chain):
         :param threshold_palette: the threshold of palette mode. if None, then histogram mode.
         :param use_multidimensional: if it is True, multidimensional histogram mode
         """
-        super().__init__()
+        super(HistogramNetwork, self).__init__()
 
         self.ranges = ranges
         self.num_bins = num_bins

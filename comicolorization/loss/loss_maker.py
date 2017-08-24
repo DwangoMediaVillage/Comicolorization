@@ -9,12 +9,13 @@ class LossMaker(object):
     def __init__(
             self,
             args,
-            model: comicolorization.models.BaseModel,
-            model_reinput_list: typing.List[comicolorization.models.BaseModel],
+            model,
+            model_reinput_list,
             range_input_luminance,
             range_output_luminance,
-            discriminator: comicolorization.models.Discriminator
+            discriminator
     ):
+        # type: (any, comicolorization.models.BaseModel, typing.List[comicolorization.models.BaseModel], any, any, comicolorization.models.Discriminator) -> None
         self.args = args
         self.model = model
         self.model_reinput_list = model_reinput_list
@@ -176,13 +177,8 @@ class LossMaker(object):
             'reinput': loss_detail_reinput,
         }
 
-    def calc_loss(self, *_args, test):
-        image_target, image_gray, image_rgb = _args[:3]
-
-        if not self.use_classification:
-            label = None
-        else:
-            label = _args[3]
+    def calc_loss(self, image_target, image_gray, image_rgb, label=None, test=None):
+        assert test is not None, "Please input True of Fase for the value of test."
 
         # forward
         outputs = self._forward(image_input=image_gray, image_rgb=image_rgb, image_real=image_target, test=test)
@@ -216,6 +212,6 @@ class LossMaker(object):
             'loss_adversarial/accuracy_discriminator',
         ]
 
-    def loss_test(self, *_args):
-        loss_detail = self.calc_loss(*_args, test=True)
+    def loss_test(self, image_target, image_gray, image_rgb, label=None):
+        loss_detail = self.calc_loss(image_target, image_gray, image_rgb, label, test=True)
         return loss_detail['sum_loss']

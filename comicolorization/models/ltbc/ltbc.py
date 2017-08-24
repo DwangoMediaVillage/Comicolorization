@@ -27,7 +27,7 @@ class Ltbc(BaseModel):
             loss_type='RGB',
     ):
         """
-        :param use_global: Trueならglobal feature networkを使用する
+        :param use_global: if True, use global feature network
         :param use_classification: if True, use classification network
         :param use_histogram: if True, use histogram network
         :param use_multidimensional_histogram: if it is True, multidimensional histogram mode
@@ -40,7 +40,7 @@ class Ltbc(BaseModel):
             assert use_histogram, "when using multidimensional histogram, should set `use_histogram=True`"
 
         out_channels = 2 if loss_type == 'ab' else 3
-        super().__init__(
+        super(Ltbc, self).__init__(
             low_level=LowLevelNetwork(),
             mid_level=MidLevelNetwork(),
             fusion_layer=FusionLayer(),
@@ -72,7 +72,8 @@ class Ltbc(BaseModel):
                 use_multidimensional=use_multidimensional_histogram,
             ))
 
-    def __call__(self, x, x_global=None, x_rgb=None, x_histogram=None, test: bool = False):
+    def __call__(self, x, x_global=None, x_rgb=None, x_histogram=None, test=False):
+        # type: (any, any, any, any, bool) -> any
         """
         :param x: input image
         :param x_global: global input image. if None, then x_global=x
