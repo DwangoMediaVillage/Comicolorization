@@ -177,13 +177,8 @@ class LossMaker(object):
             'reinput': loss_detail_reinput,
         }
 
-    def calc_loss(self, test, *_args):
-        image_target, image_gray, image_rgb = _args[:3]
-
-        if not self.use_classification:
-            label = None
-        else:
-            label = _args[3]
+    def calc_loss(self, image_target, image_gray, image_rgb, label=None, test=None):
+        assert test is not None, "Please input True of Fase for the value of test."
 
         # forward
         outputs = self._forward(image_input=image_gray, image_rgb=image_rgb, image_real=image_target, test=test)
@@ -217,6 +212,6 @@ class LossMaker(object):
             'loss_adversarial/accuracy_discriminator',
         ]
 
-    def loss_test(self, *_args):
-        loss_detail = self.calc_loss(test=True, *_args)
+    def loss_test(self, image_target, image_gray, image_rgb):
+        loss_detail = self.calc_loss(image_target, image_gray, image_rgb, test=True)
         return loss_detail['sum_loss']
