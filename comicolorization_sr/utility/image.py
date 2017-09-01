@@ -7,7 +7,8 @@ from PIL import Image
 from skimage.color import lab2rgb
 
 
-def array_to_image(images_array: numpy.ndarray) -> typing.List[Image.Image]:
+def array_to_image(images_array):
+    # type: (numpy.ndarray) -> typing.List[Image.Image]
     color_images_array = images_array.transpose(0, 2, 3, 1)
 
     # to uint8
@@ -22,7 +23,8 @@ def array_to_image(images_array: numpy.ndarray) -> typing.List[Image.Image]:
     return [Image.fromarray(image_array) for image_array in rgb_images_array]
 
 
-def lab_array_to_image(images_array: numpy.ndarray, normalized=True) -> typing.List[Image.Image]:
+def lab_array_to_image(images_array, normalized=True):
+    # type: (numpy.ndarray, any) -> typing.List[Image.Image]
     images_array = images_array.transpose(0, 2, 3, 1)
 
     if normalized:
@@ -39,10 +41,11 @@ def lab_array_to_image(images_array: numpy.ndarray, normalized=True) -> typing.L
     return images
 
 
-def save_images(images: typing.List[Image.Image], path_directory, prefix_filename):
+def save_images(images, path_directory, prefix_filename):
     """
     save image as [prefix_filename][index of image].png
     """
+    # type: (typing.List[Image.Image], any, any) -> any
     if not os.path.exists(path_directory):
         os.mkdir(path_directory)
 
@@ -56,7 +59,8 @@ def save_images(images: typing.List[Image.Image], path_directory, prefix_filenam
     return filepath_list
 
 
-def save_tiled_image(paths_input: typing.List[str], path_output=None, col=None, row=None, border=5):
+def save_tiled_image(paths_input, path_output=None, col=None, row=None, border=5):
+    # type: (typing.List[str], any, any, any, any) -> any
     num_image = len(paths_input)
 
     if path_output is None:

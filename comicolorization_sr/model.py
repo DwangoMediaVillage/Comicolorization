@@ -1,44 +1,48 @@
 from abc import ABCMeta, abstractmethod
 import chainer
 import typing
+import six
 
 from comicolorization_sr.config import ModelConfig
 from comicolorization_sr import utility
 
-
-class BaseModel(chainer.Chain, metaclass=ABCMeta):
-    def __init__(self, config: ModelConfig, **kwargs):
-        super().__init__(**kwargs)
+@six.add_metaclass(ABCMeta)
+class BaseModel(chainer.Chain, object):
+    def __init__(self, config, **kwargs):
+        # type: (ModelConfig, **any) -> None
+        super(BaseModel, self).__init__(**kwargs)
         self.config = config
 
     @abstractmethod
-    def __call__(self, x, test) -> (chainer.Variable, typing.Dict):
+    def __call__(self, x, test):
+        # type: (any, any) -> typing.Tuple[chainer.Variable, typing.Dict]
         pass
 
 
 class Unet(BaseModel):
-    def __init__(self, config: ModelConfig):
-        super().__init__(
+    def __init__(self, config):
+        # type: (ModelConfig) -> None
+        super(Unet, self).__init__(
             config,
-            c0=utility.chainer.Link.create_convolution_2d(4, 32, 3, 1, 1),
-            c1=utility.chainer.Link.create_convolution_2d(32, 64, 4, 2, 1),
-            c2=utility.chainer.Link.create_convolution_2d(64, 64, 3, 1, 1),
-            c3=utility.chainer.Link.create_convolution_2d(64, 128, 4, 2, 1),
-            c4=utility.chainer.Link.create_convolution_2d(128, 128, 3, 1, 1),
-            c5=utility.chainer.Link.create_convolution_2d(128, 256, 4, 2, 1),
-            c6=utility.chainer.Link.create_convolution_2d(256, 256, 3, 1, 1),
-            c7=utility.chainer.Link.create_convolution_2d(256, 512, 4, 2, 1),
-            c8=utility.chainer.Link.create_convolution_2d(512, 512, 3, 1, 1),
+            c0=utility.chainer_utility.Link.create_convolution_2d(4, 32, 3, 1, 1),
+            c1=utility.chainer_utility.Link.create_convolution_2d(32, 64, 4, 2, 1),
+            c2=utility.chainer_utility.Link.create_convolution_2d(64, 64, 3, 1, 1),
+            c3=utility.chainer_utility.Link.create_convolution_2d(64, 128, 4, 2, 1),
+            c4=utility.chainer_utility.Link.create_convolution_2d(128, 128, 3, 1, 1),
+            c5=utility.chainer_utility.Link.create_convolution_2d(128, 256, 4, 2, 1),
+            c6=utility.chainer_utility.Link.create_convolution_2d(256, 256, 3, 1, 1),
+            c7=utility.chainer_utility.Link.create_convolution_2d(256, 512, 4, 2, 1),
+            c8=utility.chainer_utility.Link.create_convolution_2d(512, 512, 3, 1, 1),
 
-            dc8=utility.chainer.Link.create_deconvolution_2d(1024, 512, 4, 2, 1),
-            dc7=utility.chainer.Link.create_convolution_2d(512, 256, 3, 1, 1),
-            dc6=utility.chainer.Link.create_deconvolution_2d(512, 256, 4, 2, 1),
-            dc5=utility.chainer.Link.create_convolution_2d(256, 128, 3, 1, 1),
-            dc4=utility.chainer.Link.create_deconvolution_2d(256, 128, 4, 2, 1),
-            dc3=utility.chainer.Link.create_convolution_2d(128, 64, 3, 1, 1),
-            dc2=utility.chainer.Link.create_deconvolution_2d(128, 64, 4, 2, 1),
-            dc1=utility.chainer.Link.create_convolution_2d(64, 32, 3, 1, 1),
-            dc0=utility.chainer.Link.create_convolution_2d(64, 3, 3, 1, 1),
+            dc8=utility.chainer_utility.Link.create_deconvolution_2d(1024, 512, 4, 2, 1),
+            dc7=utility.chainer_utility.Link.create_convolution_2d(512, 256, 3, 1, 1),
+            dc6=utility.chainer_utility.Link.create_deconvolution_2d(512, 256, 4, 2, 1),
+            dc5=utility.chainer_utility.Link.create_convolution_2d(256, 128, 3, 1, 1),
+            dc4=utility.chainer_utility.Link.create_deconvolution_2d(256, 128, 4, 2, 1),
+            dc3=utility.chainer_utility.Link.create_convolution_2d(128, 64, 3, 1, 1),
+            dc2=utility.chainer_utility.Link.create_deconvolution_2d(128, 64, 4, 2, 1),
+            dc1=utility.chainer_utility.Link.create_convolution_2d(64, 32, 3, 1, 1),
+            dc0=utility.chainer_utility.Link.create_convolution_2d(64, 3, 3, 1, 1),
 
             bnc0=chainer.links.BatchNormalization(32),
             bnc1=chainer.links.BatchNormalization(64),
@@ -98,6 +102,7 @@ class Unet(BaseModel):
         return d0, {}
 
 
-def prepare_model(config: ModelConfig):
+def prepare_model(config):
+    # type: (ModelConfig) -> any
     model = Unet(config)
     return model

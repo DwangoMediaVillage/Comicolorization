@@ -4,8 +4,9 @@ from comicolorization_sr.loss import LossMaker
 
 
 class Updater(chainer.training.StandardUpdater):
-    def __init__(self, loss_maker: LossMaker, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, loss_maker, *args, **kwargs):
+        # type: (LossMaker, *any, **any) -> None
+        super(Updater, self).__init__(*args, **kwargs)
         self.loss_maker = loss_maker
 
     def update_core(self):

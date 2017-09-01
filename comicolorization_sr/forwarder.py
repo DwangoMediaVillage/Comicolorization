@@ -8,11 +8,12 @@ from comicolorization_sr.model import Unet
 class Forwarder(chainer.ChainList):
     def __init__(
             self,
-            config: ModelConfig,
-            colorizer: typing.Callable[[typing.Any, bool], typing.Any],
-            model: Unet,
+            config,
+            colorizer,
+            model,
     ):
-        super().__init__(config)
+        # type: (ModelConfig, typing.Callable[[typing.Any, bool], typing.Any], Unet) -> any
+        super(Forwarder, self).__init__(config)
         self.config = config
         self.colorizer = colorizer
         self.model = model

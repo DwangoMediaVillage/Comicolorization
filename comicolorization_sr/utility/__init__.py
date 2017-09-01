@@ -1,2 +1,2 @@
-from . import chainer
+from . import chainer_utility
 from . import image

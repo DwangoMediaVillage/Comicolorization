@@ -13,8 +13,9 @@ from comicolorization_sr import dataset
 
 
 class ComicolorizationTask(BaseColorizationTask):
-    def __init__(self, config: Config, load_model=True):
-        super().__init__(config, load_model)
+    def __init__(self, config, load_model=True):
+        # type: (Config, any) -> None
+        super(ComicolorizationTask, self).__init__(config, load_model)
 
         path_result_directory = config.model_config.other['path_result_directory']
         args_default = comicolorization.utility.config.get_default_train_args()
@@ -105,7 +106,8 @@ class LabOtsuThresholdImageProcess(dataset.BaseDataProcess):
 
 
 class LabSeveralPixelDrawingImageProcess(dataset.BaseDataProcess):
-    def __init__(self, max_point: int, max_size: int):
+    def __init__(self, max_point, max_size):
+        # type: (int, int) -> None
         self.max_point = max_point
         self.max_size = max_size
 

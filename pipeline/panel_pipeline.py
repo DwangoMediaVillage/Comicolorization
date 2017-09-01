@@ -31,7 +31,7 @@ def _make_input_panel_image(panel_image, input_panel_rect, input_width):
     :param input_width: width of input image for neural network model
     :return: input image for neural network model
     """
-    x, y, _w, _h = input_panel_rect
+    x, y, _w, _h = (int(value) for value in input_panel_rect)
     w, h = _w - x, _h - y
 
     img = panel_image.convert('L')
@@ -49,13 +49,14 @@ class PanelPipeline(object):
 
     def __init__(
             self,
-            drawer: comicolorization.drawer.Drawer,
-            drawer_sr: comicolorization_sr.drawer.Drawer,
+            drawer,
+            drawer_sr,
             image,
             reference_image,
             resize_width=224,
             threshold=200,
     ):
+        # type: (comicolorization.drawer.Drawer, comicolorization_sr.drawer.Drawer, any, any, any, any) -> None
         """
         :param drawer: drawer of the comicolorization task
         :param drawer_sr: draw of the super resolution task

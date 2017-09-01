@@ -16,14 +16,15 @@ class PagePipeline(object):
 
     def __init__(
             self,
-            drawer: comicolorization.drawer.Drawer,
-            drawer_sr: comicolorization_sr.drawer.Drawer,
+            drawer,
+            drawer_sr,
             image,
             reference_images,
             threshold_binary,
             threshold_line,
             panel_rects,
     ):
+        # type: (comicolorization.drawer.Drawer, comicolorization_sr.drawer.Drawer, any, any, any, any, any) -> None
         """
         :param drawer: drawer of the comicolorization task
         :param drawer_sr: draw of the super resolution task
@@ -51,7 +52,8 @@ class PagePipeline(object):
         drawn_panel_images = [panel.process() for panel in panels]
         return self._post_process(drawn_panel_images)
 
-    def _pre_process(self) -> typing.List[PanelPipeline]:
+    def _pre_process(self):
+        # type: (any) -> typing.List[PanelPipeline]
         """
         * split panel images
         """

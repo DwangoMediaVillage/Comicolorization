@@ -7,12 +7,14 @@ from comicolorization_sr.data_process import *
 
 
 class BaseImageDataset(chainer.dataset.DatasetMixin):
-    def get_example(self, i) -> Image.Image:
+    def get_example(self, i):
+        # type: (any) -> Image.Image
         raise NotImplementedError
 
 
 class BaseImageArrayDataset(chainer.dataset.DatasetMixin):
-    def get_example(self, i) -> numpy.ndarray:
+    def get_example(self, i):
+        # type: (any) -> numpy.ndarray
         raise NotImplementedError
 
 
@@ -84,12 +86,13 @@ class RandomFlipImageDataset(BaseImageDataset):
 class PairImageDataset(chainer.dataset.DatasetMixin):
     def __init__(
             self,
-            base_dataset: BaseImageDataset,
+            base_dataset,
             test,
-            input_process: BaseDataProcess,
-            concat_process: BaseDataProcess,
-            target_process: BaseDataProcess,
+            input_process,
+            concat_process,
+            target_process,
     ):
+        # type: (BaseImageDataset, any, BaseImageDataset, BaseImageDataset, BaseImageDataset) -> None
         self._test = test
         self._base_dataset = base_dataset
         self._input_process = input_process
@@ -112,14 +115,15 @@ class PairImageDataset(chainer.dataset.DatasetMixin):
 
 
 def create(
-        config: config.DatasetConfig,
-        input_process: BaseDataProcess,
-        concat_process: BaseDataProcess,
+        config,
+        input_process,
+        concat_process,
 ):
     """
     :param input_process: make small input image for comicolorization task
     :param concat_process: make big input image for super resolution task
     """
+    # type: (config.DatasetConfig, BaseImageDataset, BaseImageDataset) -> any
     paths = glob.glob(config.images_glob)
 
     random_state = numpy.random.RandomState(seed=config.seed_evaluation)

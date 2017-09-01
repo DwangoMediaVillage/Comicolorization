@@ -56,8 +56,8 @@ class Drawer(object):
             concat,
     ):
         device = self.gpu
-        input = utility.chainer.to_variable_recursive(input, device=device, volatile=True)
-        concat = utility.chainer.to_variable_recursive(concat, device=device, volatile=True)
+        input = utility.chainer_utility.to_variable_recursive(input, device=device, volatile=True)
+        concat = utility.chainer_utility.to_variable_recursive(concat, device=device, volatile=True)
 
         output = self.forwarder.forward(input, concat, test=True)['image']
         output.to_cpu()
@@ -70,8 +70,8 @@ class Drawer(object):
             concat,
     ):
         device = self.gpu
-        image = utility.chainer.to_variable_recursive(image, device=device, volatile=True)
-        concat = utility.chainer.to_variable_recursive(concat, device=device, volatile=True)
+        image = utility.chainer_utility.to_variable_recursive(image, device=device, volatile=True)
+        concat = utility.chainer_utility.to_variable_recursive(concat, device=device, volatile=True)
 
         output = self.forwarder.forward_super_pixel(image, concat, test=True)['image']
         output.to_cpu()

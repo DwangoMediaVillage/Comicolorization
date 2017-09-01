@@ -3,20 +3,23 @@ import numpy
 from PIL import Image
 from skimage.color import rgb2lab
 import typing
+import six
 
-
-class BaseDataProcess(metaclass=ABCMeta):
+@six.add_metaclass(ABCMeta)
+class BaseDataProcess(object):
     @abstractmethod
     def __call__(self, data, test):
         pass
 
 
 class RandomScaleImageProcess(BaseDataProcess):
-    def __init__(self, min_scale: float, max_scale: float):
+    def __init__(self, min_scale, max_scale):
+        # type: (float, float) -> None
         self._min_scale = min_scale
         self._max_scale = max_scale
 
-    def __call__(self, image: Image.Image, test):
+    def __call__(self, image, test):
+        # type: (Image.Image, any) -> any
         base_size = image.size
 
         rand = numpy.random.rand(1) if not test else 0.5
@@ -35,7 +38,8 @@ class LabImageArrayProcess(BaseDataProcess):
         self._normalize = normalize
         self._dtype = dtype
 
-    def __call__(self, image: Image.Image, test):
+    def __call__(self, image, test):
+        # type: (Image.Image, any) -> any
         image = numpy.asarray(image, dtype=self._dtype)[:, :, :3] / 255  # rgb
         image = rgb2lab(image).astype(self._dtype).transpose(2, 0, 1)
 
@@ -47,7 +51,8 @@ class LabImageArrayProcess(BaseDataProcess):
 
 
 class ChainProcess(BaseDataProcess):
-    def __init__(self, process: typing.Iterable[BaseDataProcess]):
+    def __init__(self, process):
+        # type: (typing.Iterable[BaseDataProcess]) -> None
         self._process = process
 
     def __call__(self, data, test):

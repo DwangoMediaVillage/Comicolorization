@@ -5,7 +5,8 @@ from chainer.training import extensions
 _default_initialW = None
 
 
-def to_device(elem: chainer.Variable, device=None):
+def to_device(elem, device=None):
+    # type: (chainer.Variable, any) -> any
     if device is None:
         return elem
     elif device < 0:

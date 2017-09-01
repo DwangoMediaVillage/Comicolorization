@@ -8,10 +8,11 @@ from comicolorization_sr.model import Unet
 class LossMaker(object):
     def __init__(
             self,
-            config: LossConfig,
-            forwarder: Forwarder,
-            model: Unet,
+            config,
+            forwarder,
+            model,
     ):
+        # type: (LossConfig, Forwarder, Unet) -> None
         self.config = config
         self.forwarder = forwarder
         self.model = model

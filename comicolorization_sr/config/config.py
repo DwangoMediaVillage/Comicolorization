@@ -2,6 +2,7 @@ import json
 import os
 import shutil
 import typing
+import io
 
 
 class Config(object):
@@ -11,7 +12,7 @@ class Config(object):
 
     def __init__(self, path_json):
         self.path_json = path_json
-        self.config = json.load(open(path_json, encoding='utf-8'))
+        self.config = json.load(io.open(path_json, encoding='utf-8'))
 
         self.dataset_config = DatasetConfig(self.config.get('dataset'))
         self.loss_config = LossConfig(self.config.get('loss'))

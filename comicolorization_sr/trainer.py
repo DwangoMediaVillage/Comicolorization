@@ -6,7 +6,8 @@ from comicolorization_sr.config import TrainConfig
 from comicolorization_sr import utility
 
 
-def create_optimizer(train_config: TrainConfig, model, model_name: str):
+def create_optimizer(train_config, model, model_name):
+    # type: (TrainConfig, any, str) -> any
     config = train_config.optimizer[model_name]
     if config == 'default':
         config = train_config.optimizer['default']
@@ -36,18 +37,19 @@ def create_optimizer(train_config: TrainConfig, model, model_name: str):
 
 
 def create_trainer(
-        config: TrainConfig,
-        project_path: str,
+        config,
+        project_path,
         updater,
-        model: typing.Dict,
+        model,
         eval_func,
         iterator_test,
         iterator_train_varidation,
         loss_names,
         converter=chainer.dataset.convert.concat_examples,
 ):
+    # type: (TrainConfig, str, any, typing.Dict, any, any, any, any, any) -> any
     def _make_evaluator(iterator):
-        return utility.chainer.NoVariableEvaluator(
+        return utility.chainer_utility.NoVariableEvaluator(
             iterator,
             target=model,
             converter=converter,
