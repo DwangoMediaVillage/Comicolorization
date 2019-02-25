@@ -16,7 +16,7 @@ def _calc_input_panel_rect(panel_size, input_width):
     :return: rectangle of panel image [left, top, right, bottom]
     """
     w, h = panel_size
-    scale = min(input_width / w, input_width / h)
+    scale = min(float(input_width) / w, float(input_width) / h)
 
     w, h = (round(w * scale), round(h * scale))
     x, y = (input_width - w) // 2, (input_width - h) // 2
