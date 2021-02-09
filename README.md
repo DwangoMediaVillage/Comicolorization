@@ -175,7 +175,7 @@ pip install git+http://github.com/DwangoMediaVillage/Comicolorization
 ```
 
 ### Download trained model
-Please download model files at `model` directory in this repository.
+Please download [model files](https://s3-us-west-1.amazonaws.com/nico-opendata-distribution/550000.model) at `model` directory in this repository.
 
 ### How to use
 1. import `comicolorization` and `comicolorization_sr`
